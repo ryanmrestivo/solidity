@@ -100,28 +100,3 @@
 [awesome ethereum](https://github.com/btomashvili/awesome-ethereum)
 
 [awesome ethereum virtual  machine](https://github.com/pirapira/awesome-ethereum-virtual-machine)
-
-## Jobs
-
-[Ethercasts](https://jobs.ethercasts.com/)
-
-[Solidified](https://solidified.io/)
-
-[codementor](https://www.codementor.io/solidity-developers)
-
-[iosiro](https://www.iosiro.com/)
-
-[audithor](https://audithor.io)
-
-## Twitter
-
-[@withzombies](https://twitter.com/withzombies)
-[@chaignc](https://twitter.com/chaignc)
-[@trailofbits](https://twitter.com/trailofbits)
-
-----
-By [@chaignc][] [#HexpressoTeam][hexpresso].
-
-
-[hexpresso]:     https://hexpresso.github.io
-[@chaignc]:    https://twitter.com/chaignc
