@@ -3,8 +3,6 @@
 
 ![alt text](https://blog.ret2.io/assets/img/evm_bytecode.png)
 
-[Image from this Practical ETH decompilation blog](https://blog.ret2.io/2018/05/16/practical-eth-decompilation/) .
-
 ## Tools
 
 [Porosity](https://github.com/comaeio/porosity) - Decompiler and Security Analysis tool for Blockchain-based Ethereum Smart-Contracts.
