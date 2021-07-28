@@ -1,19 +1,3 @@
-<p align="center">
-  <a href="https://github.com/s0md3v/Orbit"><img src="https://i.ibb.co/bXsZHW0/orbit.png" alt="Orbit"></a>
-  <br>
-  <b>ＯＲＢＩＴ</b>
-</p>
-<h4 align="center">Blockchain Transactions Investigation Tool</h4>
-<p align="center">
-  <a href="https://github.com/s0md3v/Orbit/releases">
-    <img src="https://img.shields.io/github/release/s0md3v/Orbit.svg">
-  </a>
-  <a href="https://github.com/s0md3v/Orbit/issues?q=is%3Aissue+is%3Aclosed">
-      <img src="https://img.shields.io/github/issues-closed-raw/s0md3v/Orbit.svg">
-  <img src="https://img.shields.io/badge/python-> 3.2-blue.svg">
-  </a>
-</p>
-
 ![graph-demo](https://i.ibb.co/rx76Ryt/Screenshot-2019-07-26-03-41-34.png)
 
 ### Introduction
