@@ -1,5 +1,8 @@
+Incredible resource on Solidity
+https://www.youtube.com/watch?v=M576WGiDBdQ
+
 # Awesome cryptocurrency security
-😎 Curated list about cryptocurrency security. (reverse, exploit, fuzz..)
+Curated list about cryptocurrency security. (reverse, exploit, fuzz..)
 
 ![alt text](https://blog.ret2.io/assets/img/evm_bytecode.png)
 
