@@ -69,15 +69,19 @@ integrationTests = testGroup "Solidity Integration Testing"
 -- single.sol is really slow and kind of unstable. it also messes up travis.
 --  , testContract "coverage/single.sol"    (Just "coverage/test.yaml")
 --      [ ("echidna_state failed",                   solved      "echidna_state") ]
-  , testContract "coverage/multi.sol"     Nothing
+  , testContract "coverage/multi.sol"     (Just "coverage/test.yaml")
       [ ("echidna_state3 failed",                  solved      "echidna_state3") ]
   , testContract "basic/balance.sol"      (Just "basic/balance.yaml")
-      [ ("echidna_balance failed",                 passed      "echidna_balance") ]
+      [ ("echidna_balance failed",                 passed      "echidna_balance")
+      , ("echidna_balance_new failed",             passed      "echidna_balance_new") 
+      , ("echidna_low_level_call failed",          passed      "echidna_low_level_call") 
+      , ("echidna_no_magic failed",                passed      "echidna_no_magic") 
+      ]
   , testContract "basic/library.sol"      (Just "basic/library.yaml")
       [ ("echidna_library_call failed",            solved      "echidna_library_call") ]
   , testContract "basic/library.sol"      (Just "basic/library.yaml")
       [ ("echidna_valid_timestamp failed",         passed      "echidna_valid_timestamp") ]
-  , testContractV "basic/fallback.sol"   (Just (< solcV (0,6,0))) Nothing 
+  , testContractV "basic/fallback.sol"   (Just (< solcV (0,6,0))) Nothing
       [ ("echidna_fallback failed",                solved      "echidna_fallback") ]
   , testContract "basic/large.sol"        Nothing
       [ ("echidna_large failed",                   solved      "echidna_large") ]
@@ -94,7 +98,7 @@ integrationTests = testGroup "Solidity Integration Testing"
       , ("internal_assert passed",         solved      "ASSERTION internal_assert")
       , ("external_assert passed",         solved      "ASSERTION external_assert")
       , ("f failed",                       passed      "ASSERTION f")
- ]
+      ]
   , testContract "basic/assert.sol"       (Just "basic/benchmark.yaml")
       [ ("coverage is empty",                      not . coverageEmpty         )
       , ("tests are not empty",                    testsEmpty                  ) ]
@@ -104,7 +108,7 @@ integrationTests = testGroup "Solidity Integration Testing"
   , testContract "basic/time.sol"         (Just "basic/time.yaml")
       [ ("echidna_timepassed passed",              solved      "echidna_timepassed") ]
   , testContract "basic/delay.sol"        Nothing
-      [ ("echidna_block_number passed",            solved    "echidna_block_number") 
+      [ ("echidna_block_number passed",            solved    "echidna_block_number")
       , ("echidna_timestamp passed",               solved    "echidna_timestamp") ]
   , testContract "basic/now.sol"          Nothing
       [ ("echidna_now passed",                     solved      "echidna_now") ]
@@ -137,13 +141,13 @@ integrationTests = testGroup "Solidity Integration Testing"
       [ ("echidna_mutated passed",                 solved      "echidna_mutated") ]
   , testContract "basic/gasuse.sol"       (Just "basic/gasuse.yaml")
       [ ("echidna_true failed",                    passed     "echidna_true")
-      , ("g gas estimate wrong",                   gasInRange "g" 15000000 40000000)
-      , ("f_close1 gas estimate wrong",            gasInRange "f_close1" 1800 2000)
+      , ("g gas estimate wrong",                   gasInRange "g" 130000 40000000)
+      , ("f_close1 gas estimate wrong",            gasInRange "f_close1" 400 2000)
       , ("f_open1 gas estimate wrong",             gasInRange "f_open1"  18000 23000)
       , ("push_b gas estimate wrong",              gasInRange "push_b"   39000 45000)
       ]
   , testContract "basic/gaslimit.sol"  Nothing
-      [ ("echidna_gaslimit passed",                passed      "echidna_gaslimit") ] 
+      [ ("echidna_gaslimit passed",                passed      "echidna_gaslimit") ]
   ,  testContract "coverage/boolean.sol"       (Just "coverage/boolean.yaml")
       [ ("echidna_true failed",                    passed     "echidna_true")
       , ("unexpected corpus count ",               countCorpus 5)]

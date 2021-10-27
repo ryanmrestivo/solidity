@@ -152,6 +152,20 @@ subject to change to be slightly more user friendly at a later date. `testType`
 will either be `property` or `assertion`, and `status` always takes on either
 `fuzzing`, `shrinking`, `solved`, `passed`, or `error`.
 
+## Limitations and known issues
+
+EVM emulation and testing is hard. Echidna has a number of limitations in the latest release. Some of these are inherited from [hevm](https://github.com/dapphub/dapptools/tree/master/src/hevm) while some are results from design/performance decisions or simply bugs in our code. We list them here including their corresponding issue and the status ("wont fix", "in review", "fixed"). Issues that are "fixed" are expected to be included in the next Echidna release.
+
+| Description |  Issue   | Status   |  
+| :--- |     :---:              |         :---:   |
+| Debug information can be insufficient | [#656](https://github.com/crytic/echidna/issues/656) | *[in review for 2.0](https://github.com/crytic/echidna/pull/674)* |
+| Vyper support is limited | [#652](https://github.com/crytic/echidna/issues/652) | *wont fix* |
+| Limited library support for testing | [#651](https://github.com/crytic/echidna/issues/651) | *wont fix* |
+| If the contract is not properly linked, Echidna will crash | [#514](https://github.com/crytic/echidna/issues/514) | *in review* | 
+| Assertions are not detected in internal transactions | [#601](https://github.com/crytic/echidna/issues/601) | *[in review for 2.0](https://github.com/crytic/echidna/pull/674)* |
+| Assertions are not detected in solc 0.8.x | [#669](https://github.com/crytic/echidna/issues/669) | *[in review for 2.0](https://github.com/crytic/echidna/pull/674)* |
+| Value generation can fail in multi-abi mode, since the function hash is not precise enough | [#579](https://github.com/crytic/echidna/issues/579) | *[in review for 2.0](https://github.com/crytic/echidna/pull/674)*|
+
 ## Installation
 
 ### Precompiled binaries
@@ -218,7 +232,23 @@ Feel free to stop by our #ethereum slack channel in [Empire Hacking](https://emp
 
 Echidna is licensed and distributed under the [AGPLv3 license](https://github.com/crytic/echidna/blob/master/LICENSE).
 
-## Echidna Trophies
+## Projects using Echidna
+
+This is a partial list of smart contracts projects that use Echidna for testing:
+
+* [Uniswap-v3](https://github.com/search?q=org%3AUniswap+echidna&type=commits)
+* [Balancer](https://github.com/balancer-labs/balancer-core/tree/master/echidna)
+* [MakerDAO vest](https://github.com/makerdao/dss-vest/pull/16)
+* [Optimism DAI Bridge](https://github.com/BellwoodStudios/optimism-dai-bridge/blob/master/contracts/test/DaiEchidnaTest.sol)
+* [WETH10](https://github.com/WETH10/WETH10/tree/main/contracts/fuzzing)
+* [Yield](https://github.com/yieldprotocol/fyDai/pull/312)
+* [Convexity Protocol](https://github.com/opynfinance/ConvexityProtocol/tree/dev/contracts/echidna)
+* [Aragon Staking](https://github.com/aragon/staking/blob/82bf54a3e11ec4e50d470d66048a2dd3154f940b/packages/protocol/contracts/test/lib/EchidnaStaking.sol)
+* [Centre Token](https://github.com/centrehq/centre-tokens/tree/master/echidna_tests)
+* [Tokencard](https://github.com/tokencard/contracts/tree/master/tools/echidna)
+* [Minimalist USD Stablecoin](https://github.com/usmfum/USM/pull/41) 
+
+## Trophies
 
 ### Security Issues
 
@@ -258,5 +288,6 @@ All these can be solved, from a few seconds to one or two minutes on a laptop co
 
 ### Trail of Bits
 - [Echidna: effective, usable, and fast fuzzing for smart contracts](https://github.com/trailofbits/publications/blob/master/papers/echidna_issta2020.pdf), Gustavo Grieco, Will Song, Artur Cygan, Josselin  Feist, Alex Groce - ISSTA '20
+- [echidna-parade: A Tool for Diverse Multicore Smart Contract Fuzzing](https://agroce.github.io/issta21.pdf), Alex Groce, Gustavo Grieco - ISSTA '21
 
 If you are using Echidna on an academic work, consider applying to the [Crytic $10k Research Prize](https://blog.trailofbits.com/2019/11/13/announcing-the-crytic-10k-research-prize/).

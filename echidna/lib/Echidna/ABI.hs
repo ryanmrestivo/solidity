@@ -11,7 +11,9 @@ module Echidna.ABI where
 import Control.Lens
 import Control.Monad (join, liftM2, liftM3, foldM, replicateM)
 import Control.Monad.Random.Strict (MonadRandom, getRandom, getRandoms, getRandomR, uniformMay)
+import Data.Binary.Put (runPut, putWord32be)
 import Data.Bool (bool)
+import Data.ByteString.Lazy as BSLazy (toStrict)
 import Data.ByteString (ByteString)
 import Data.Foldable (toList)
 import Data.Hashable (Hashable(..))
@@ -20,6 +22,7 @@ import Data.HashSet (HashSet, fromList, union)
 import Data.List (intercalate)
 import Data.Maybe (fromMaybe, catMaybes)
 import Data.Text (Text)
+import Data.Text.Encoding (encodeUtf8)
 import Data.Vector (Vector)
 import Data.Vector.Instances ()
 import Data.Word8 (Word8)
@@ -27,8 +30,7 @@ import Data.DoubleWord (Int256, Word256)
 import Numeric (showHex)
 
 import EVM.ABI hiding (genAbiValue)
-import EVM.Keccak (abiKeccak)
-import EVM.Types (Addr)
+import EVM.Types (Addr, abiKeccak)
 
 import qualified Control.Monad.Random.Strict as R
 import qualified Data.ByteString as BS
@@ -39,7 +41,7 @@ import qualified Data.Text.Encoding as TE
 import qualified Data.Vector as V
 import qualified Data.HashSet as H
 
-import Echidna.Mutator.Array (mutateLL, replaceAt) 
+import Echidna.Mutator.Array (mutateLL, replaceAt)
 import Echidna.Types.Random
 import Echidna.Types.Signature
 
@@ -179,6 +181,12 @@ genInteractions l = genAbiCall =<< rElem l
 mutateNum :: (Integral a, MonadRandom m) => a -> m a
 mutateNum x = bool (x +) (x -) <$> getRandom <*> (fromIntegral <$> getRandomR (0, toInteger x))
 
+fixAbiUInt :: Int -> Word256 -> AbiValue
+fixAbiUInt n x = AbiUInt n (x `mod` ((2 ^ n) - 1))
+
+fixAbiInt :: Int -> Int256 -> AbiValue
+fixAbiInt n x = AbiInt n (x `mod` 2 ^ (n - 1))
+
 -- | Given a way to generate random 'Word8's and a 'ByteString' b of length l,
 -- generate between 0 and 2l 'Word8's and add insert them into b at random indices.
 addChars :: MonadRandom m => m Word8 -> ByteString -> m ByteString
@@ -266,11 +274,11 @@ shrinkAbiCall = traverse $ traverse shrinkAbiValue
 mutateAbiValue :: MonadRandom m => AbiValue -> m AbiValue
 mutateAbiValue (AbiUInt n x)         = getRandomR (0, 9 :: Int) >>= -- 10% of chance of mutation
                                           \case
-                                            0 -> (AbiUInt n <$> mutateNum x)
+                                            0 -> fixAbiUInt n <$> mutateNum x
                                             _ -> return $ AbiUInt n x
 mutateAbiValue (AbiInt n x)          = getRandomR (0, 9 :: Int) >>= -- 10% of chance of mutation
                                           \case
-                                            0 -> (AbiInt n <$> mutateNum x)
+                                            0 -> fixAbiInt n <$> mutateNum x
                                             _ -> return $ AbiInt n x
 
 mutateAbiValue (AbiAddress x)        = return $ AbiAddress x
@@ -312,8 +320,8 @@ genWithDict genDict m g t = do
 -- | Synthesize a random 'AbiValue' given its 'AbiType'. Requires a dictionary.
 genAbiValueM :: MonadRandom m => GenDict -> AbiType -> m AbiValue
 genAbiValueM genDict = genWithDict genDict (toList <$> genDict ^. constants) $ \case
-  (AbiUIntType n)         -> AbiUInt n  . fromInteger <$> getRandomUint n
-  (AbiIntType n)          -> AbiInt n   . fromInteger <$> getRandomInt n
+  (AbiUIntType n)         -> fixAbiUInt n . fromInteger <$> getRandomUint n
+  (AbiIntType n)          -> fixAbiInt n . fromInteger <$> getRandomInt n
   AbiAddressType          -> AbiAddress . fromInteger <$> getRandomR (0, 2 ^ (160 :: Integer) - 1)
   AbiBoolType             -> AbiBool <$> getRandom
   (AbiBytesType n)        -> AbiBytes n . BS.pack . take n <$> getRandoms
@@ -338,3 +346,8 @@ genAbiCallM genDict abi = do
 -- | Given a list of 'SolSignature's, generate a random 'SolCall' for one, possibly with a dictionary.
 genInteractionsM :: MonadRandom m => GenDict -> NE.NonEmpty SolSignature -> m SolCall
 genInteractionsM genDict l = genAbiCallM genDict =<< rElem l
+
+abiCalldata :: Text -> Vector AbiValue -> BS.ByteString
+abiCalldata s xs = BSLazy.toStrict . runPut $ do
+  putWord32be (abiKeccak (encodeUtf8 s))
+  putAbi (AbiTuple xs)

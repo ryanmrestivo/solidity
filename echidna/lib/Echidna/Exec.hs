@@ -13,16 +13,15 @@ import Control.Monad.State.Strict (MonadState, execState)
 import Data.Has (Has(..))
 import Data.Maybe (fromMaybe)
 import EVM
-import EVM.Op (Op(..))
 import EVM.Exec (exec, vmForEthrunCreation)
-import EVM.Types (Buffer(..))
+import EVM.Types (Buffer(..), SymWord, Word)
 import EVM.Symbolic (litWord)
 
-import qualified Data.ByteString as BS
 import qualified Data.Map as M
 import qualified Data.Set as S
 
 import Echidna.Transaction
+import Echidna.Types.Buffer (viewBuffer)
 import Echidna.Types.Coverage (CoverageMap)
 import Echidna.Types.Tx (TxCall(..), Tx, TxResult(..), call, dst, initialTimestamp, initialBlockNumber)
 
@@ -37,12 +36,19 @@ classifyError :: Error -> ErrorClass
 classifyError (OutOfGas _ _)         = RevertE
 classifyError (Revert _)             = RevertE
 classifyError (UnrecognizedOpcode _) = RevertE
-classifyError (Query _)              = RevertE
 classifyError StackLimitExceeded     = RevertE
 classifyError StackUnderrun          = IllegalE
 classifyError BadJumpDestination     = IllegalE
 classifyError IllegalOverflow        = IllegalE
 classifyError _                      = UnknownE
+
+-- | Extracts the 'Query' if there is one.
+getQuery :: VMResult -> Maybe Query
+getQuery (VMFailure (Query q)) = Just q
+getQuery _                     = Nothing
+
+emptyAccount :: Contract
+emptyAccount = initialContract (RuntimeCode mempty)
 
 -- | Matches execution errors that just cause a reversion.
 pattern Reversion :: VMResult
@@ -72,14 +78,54 @@ execTxWith :: (MonadState x m, Has VM x) => (Error -> m ()) -> m VMResult -> Tx 
 execTxWith h m t = do
   sd <- hasSelfdestructed (t ^. dst)
   if sd then pure (VMFailure (Revert ""), 0)
-  else do 
-    hasLens . traces .= emptyEvents 
-    (og :: VM) <- use hasLens
+  else do
+    hasLens . traces .= emptyEvents
+    og <- use hasLens
     setupTx t
     gasIn <- use $ hasLens . state . gas
     res <- m
     gasOut <- use $ hasLens . state . gas
     cd <- use $ hasLens . state . calldata
+    case getQuery res of
+      -- A previously unknown contract is required
+      Just (PleaseFetchContract _ _ cont) -> do
+        -- Use the empty contract
+        hasLens %= execState (cont emptyAccount)
+        contTxWith h m og cd gasIn t
+
+      -- A previously unknown slot is required
+      Just (PleaseFetchSlot _ _ cont) -> do
+        -- Use the zero slot
+        hasLens %= execState (cont 0)
+        contTxWith h m og cd gasIn t
+
+      -- No queries to answer
+      _ -> getExecResult h res og cd (fromIntegral $ gasIn - gasOut) t
+
+contTxWith :: (MonadState x m, Has VM x)
+           => (Error -> m ())
+           -> m VMResult
+           -> VM
+           -> (Buffer, SymWord)
+           -> EVM.Types.Word
+           -> Tx
+           -> m (VMResult, Int)
+contTxWith h m og cd gasIn t = do
+  -- Run remaining effects
+  res <- m
+  -- Correct gas usage
+  gasOut <- use $ hasLens . state . gas
+  getExecResult h res og cd (fromIntegral $ gasIn - gasOut) t
+
+getExecResult :: (MonadState x m, Has VM x)
+              => (Error -> m ())
+              -> VMResult
+              -> VM
+              -> (Buffer, SymWord)
+              -> Int
+              -> Tx
+              -> m (VMResult, Int)
+getExecResult h res og cd g t = do
     case (res, t ^. call) of
       (f@Reversion, _) -> do
         hasLens .= og
@@ -87,12 +133,12 @@ execTxWith h m t = do
         hasLens . result ?= f
       (VMFailure x, _) -> h x
       (VMSuccess (ConcreteBuffer bc), SolCreate _) ->
-        (hasLens %=) . execState $ do
-          env . contracts . at (t ^. dst) . _Just . contractcode .= InitCode ""
-          replaceCodeOfSelf (RuntimeCode bc)
-          loadContract (t ^. dst)
+        hasLens %= execState (do
+          env . contracts . at (t ^. dst) . _Just . contractcode .= InitCode (ConcreteBuffer "")
+          replaceCodeOfSelf (RuntimeCode (ConcreteBuffer bc))
+          loadContract (t ^. dst))
       _ -> pure ()
-    pure (res, fromIntegral (gasIn - gasOut))
+    pure (res, fromIntegral g)
 
 -- | Execute a transaction "as normal".
 execTx :: (MonadState x m, Has VM x, MonadThrow m) => Tx -> m (VMResult, Int)
@@ -106,18 +152,14 @@ usingCoverage cov = maybe (cov >> liftSH exec1 >> usingCoverage cov) pure =<< us
 pointCoverage :: (MonadState x m, Has VM x) => Lens' x CoverageMap -> m ()
 pointCoverage l = do
   v <- use hasLens
-  l %= M.insertWith (const . S.insert $ (v ^. state . pc, fromMaybe 0 $ vmOpIx v, Success))
+  l %= M.insertWith (const . S.insert $ (v ^. state . pc, fromMaybe 0 $ vmOpIx v, length $ v ^. frames, Success))
                     (fromMaybe (error "no contract information on coverage") $ h v)
                     mempty
   where
-    h v = getBytecodeMetadata <$>
-            v ^? env . contracts . at (v ^. state . contract) . _Just . bytecode
-
-traceCoverage :: (MonadState x m, Has VM x, Has [Op] x) => m ()
-traceCoverage = do
-  v <- use hasLens
-  let c = v ^. state . code
-  hasLens <>= [readOp (BS.index c $ v ^. state . pc) c]
+    h v = do
+      buffer <- v ^? env . contracts . at (v ^. state . contract) . _Just . bytecode
+      bc <- viewBuffer buffer
+      pure $ getBytecodeMetadata bc
 
 initialVM :: VM
 initialVM = vmForEthrunCreation mempty & block . timestamp .~ litWord initialTimestamp
