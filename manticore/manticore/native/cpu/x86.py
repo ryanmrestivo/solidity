@@ -500,7 +500,6 @@ class AMD64RegFile(RegisterFile):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self._registers = {}
         for reg in (
             "RAX",
             "RCX",
@@ -559,6 +558,7 @@ class AMD64RegFile(RegisterFile):
             self._registers[reg] = 0
 
         self._cache = {}
+
         for name in ("AF", "CF", "DF", "IF", "OF", "PF", "SF", "ZF"):
             self.write(name, False)
 
@@ -720,6 +720,14 @@ class AMD64RegFile(RegisterFile):
     def sizeof(self, reg):
         return self._table[reg].size
 
+    def __copy__(self):
+        cls = self.__class__
+        result = cls.__new__(cls)
+        result.__dict__.update(self.__dict__)
+        result._cache = self._cache.copy()
+        result._registers = self._registers.copy()
+        return result
+
 
 # Operand Wrapper
 class AMD64Operand(Operand):
@@ -827,7 +835,7 @@ class X86Cpu(Cpu):
 
     # Segments
     def set_descriptor(self, selector, base, limit, perms):
-        assert selector > 0 and selector < 0xFFFF
+        assert selector >= 0 and selector < 0xFFFF
         assert base >= 0 and base < (1 << self.address_bit_size)
         assert limit >= 0 and limit < 0xFFFF or limit & 0xFFF == 0
         # perms ? not used yet Also is not really perms but rather a bunch of attributes
@@ -942,8 +950,11 @@ class X86Cpu(Cpu):
         """
         # FIXME Choose conservative values and consider returning some default when eax not here
         conf = {
-            0x0: (0x0000000D, 0x756E6547, 0x6C65746E, 0x49656E69),
-            0x1: (0x000306C3, 0x05100800, 0x7FFAFBFF, 0xBFEBFBFF),
+            # Taken from comparison against Unicorn@v1.0.2
+            0x0: (0x00000004, 0x68747541, 0x444D4163, 0x69746E65),
+            # Taken from comparison against Unicorn@v1.0.2
+            0x1: (0x663, 0x800, 0x2182200, 0x7088100),
+            # TODO: Check against Unicorn
             0x2: (0x76035A01, 0x00F0B5FF, 0x00000000, 0x00C10000),
             0x4: {
                 0x0: (0x1C004121, 0x01C0003F, 0x0000003F, 0x00000000),
@@ -1061,6 +1072,7 @@ class X86Cpu(Cpu):
         cpu.PF = cpu._calculate_parity_flag(temp)
         cpu.CF = False
         cpu.OF = False
+        cpu.AF = False  # Undefined, but ends up being `0` in emulator
 
     @instruction
     def NOT(cpu, dest):
@@ -5656,6 +5668,14 @@ class X86Cpu(Cpu):
         """
         cpu.write_int(dest.address(), cpu.FPCW, 16)
 
+    def sem_SYSCALL(cpu):
+        """
+        Syscall semantics without @instruction for use in emulator
+        """
+        cpu.RCX = cpu.RIP
+        cpu.R11 = cpu.RFLAGS
+        raise Syscall()
+
     @instruction
     def SYSCALL(cpu):
         """
@@ -5670,9 +5690,7 @@ class X86Cpu(Cpu):
 
         :param cpu: current CPU.
         """
-        cpu.RCX = cpu.RIP
-        cpu.R11 = cpu.RFLAGS
-        raise Syscall()
+        cpu.sem_SYSCALL()
 
     @instruction
     def MOVLPD(cpu, dest, src):
@@ -6384,6 +6402,9 @@ class I386LinuxSyscallAbi(SyscallAbi):
         for reg in ("EBX", "ECX", "EDX", "ESI", "EDI", "EBP"):
             yield reg
 
+    def get_result_reg(self):
+        return "EAX"
+
     def write_result(self, result):
         self._cpu.EAX = result
 
@@ -6403,6 +6424,9 @@ class AMD64LinuxSyscallAbi(SyscallAbi):
         for reg in ("RDI", "RSI", "RDX", "R10", "R8", "R9"):
             yield reg
 
+    def get_result_reg(self):
+        return "RAX"
+
     def write_result(self, result):
         self._cpu.RAX = result
 
@@ -6416,6 +6440,9 @@ class I386CdeclAbi(Abi):
         base = self._cpu.STACK + self._cpu.address_bit_size // 8
         for address in self.values_from(base):
             yield address
+
+    def get_result_reg(self):
+        return "EAX"
 
     def write_result(self, result):
         self._cpu.EAX = result
@@ -6438,6 +6465,9 @@ class I386StdcallAbi(Abi):
         for address in self.values_from(base):
             self._arguments += 1
             yield address
+
+    def get_result_reg(self):
+        return "EAX"
 
     def write_result(self, result):
         self._cpu.EAX = result
@@ -6468,6 +6498,9 @@ class SystemVAbi(Abi):
         word_bytes = self._cpu.address_bit_size // 8
         for address in self.values_from(self._cpu.RSP + word_bytes):
             yield address
+
+    def get_result_reg(self):
+        return "RAX"
 
     def write_result(self, result):
         # XXX(yan): Can also return in rdx for wide values.
