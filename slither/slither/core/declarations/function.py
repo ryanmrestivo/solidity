@@ -8,6 +8,7 @@ from enum import Enum
 from itertools import groupby
 from typing import Dict, TYPE_CHECKING, List, Optional, Set, Union, Callable, Tuple
 
+from slither.core.cfg.scope import Scope
 from slither.core.declarations.solidity_variables import (
     SolidityFunction,
     SolidityVariable,
@@ -42,8 +43,7 @@ if TYPE_CHECKING:
     from slither.slithir.variables import LocalIRVariable
     from slither.core.expressions.expression import Expression
     from slither.slithir.operations import Operation
-    from slither.slither import Slither
-    from slither.core.slither_core import SlitherCore
+    from slither.core.compilation_unit import SlitherCompilationUnit
 
 LOGGER = logging.getLogger("Function")
 ReacheableNode = namedtuple("ReacheableNode", ["node", "ir"])
@@ -104,12 +104,12 @@ def _filter_state_variables_written(expressions: List["Expression"]):
     return ret
 
 
-class Function(metaclass=ABCMeta):  # pylint: disable=too-many-public-methods
+class Function(SourceMapping, metaclass=ABCMeta):  # pylint: disable=too-many-public-methods
     """
     Function class
     """
 
-    def __init__(self, slither: "SlitherCore"):
+    def __init__(self, compilation_unit: "SlitherCompilationUnit"):
         super().__init__()
         self._scope: List[str] = []
         self._name: Optional[str] = None
@@ -205,7 +205,7 @@ class Function(metaclass=ABCMeta):  # pylint: disable=too-many-public-methods
         self._canonical_name: Optional[str] = None
         self._is_protected: Optional[bool] = None
 
-        self._slither: "SlitherCore" = slither
+        self.compilation_unit: "SlitherCompilationUnit" = compilation_unit
 
     ###################################################################################
     ###################################################################################
@@ -315,12 +315,15 @@ class Function(metaclass=ABCMeta):  # pylint: disable=too-many-public-methods
         return self._can_send_eth
 
     @property
-    def slither(self) -> "SlitherCore":
-        return self._slither
+    def is_checked(self) -> bool:
+        """
+        Return true if the overflow are enabled by default
 
-    @slither.setter
-    def slither(self, sl: "SlitherCore"):
-        self._slither = sl
+
+        :return:
+        """
+
+        return self.compilation_unit.solc_version >= "0.8.0"
 
     # endregion
     ###################################################################################
@@ -1402,7 +1405,11 @@ class Function(metaclass=ABCMeta):  # pylint: disable=too-many-public-methods
         """
             Determine if the function is protected using a check on msg.sender
 
-            Only detects if msg.sender is directly used in a condition
+            Consider onlyOwner as a safe modifier.
+            If the owner functionality is incorrectly implemented, this will lead to incorrectly
+            classify the function as protected
+
+            Otherwise only detects if msg.sender is directly used in a condition
             For example, it wont work for:
                 address a = msg.sender
                 require(a == owner)
@@ -1412,6 +1419,9 @@ class Function(metaclass=ABCMeta):  # pylint: disable=too-many-public-methods
 
         if self._is_protected is None:
             if self.is_constructor:
+                self._is_protected = True
+                return True
+            if "onlyOwner" in [m.name for m in self.modifiers]:
                 self._is_protected = True
                 return True
             conditional_vars = self.all_conditional_solidity_variables_read(include_loop=False)
@@ -1528,11 +1538,13 @@ class Function(metaclass=ABCMeta):  # pylint: disable=too-many-public-methods
     ###################################################################################
     ###################################################################################
 
-    def new_node(self, node_type: "NodeType", src: Union[str, Dict]) -> "Node":
+    def new_node(
+        self, node_type: "NodeType", src: Union[str, Dict], scope: Union[Scope, "Function"]
+    ) -> "Node":
         from slither.core.cfg.node import Node
 
-        node = Node(node_type, self._counter_nodes)
-        node.set_offset(src, self.slither)
+        node = Node(node_type, self._counter_nodes, scope)
+        node.set_offset(src, self.compilation_unit)
         self._counter_nodes += 1
         node.set_function(self)
         self._nodes.append(node)

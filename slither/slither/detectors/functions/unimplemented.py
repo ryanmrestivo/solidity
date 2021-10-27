@@ -28,6 +28,8 @@ class UnimplementedFunctionDetection(AbstractDetector):
 
     WIKI_TITLE = "Unimplemented functions"
     WIKI_DESCRIPTION = "Detect functions that are not implemented on derived-most contracts."
+
+    # region wiki_exploit_scenario
     WIKI_EXPLOIT_SCENARIO = """
 ```solidity
 interface BaseInterface {
@@ -48,6 +50,7 @@ contract DerivedContract is BaseInterface, BaseInterface2 {
 `DerivedContract` does not implement `BaseInterface.f2` or `BaseInterface2.f3`.
 As a result, the contract will not properly compile. 
 All unimplemented functions must be implemented on a contract that is meant to be used."""
+    # endregion wiki_exploit_scenario
 
     WIKI_RECOMMENDATION = "Implement all unimplemented functions in any contract you intend to use directly (not simply inherit from)."
 
@@ -76,7 +79,7 @@ All unimplemented functions must be implemented on a contract that is meant to b
                 and not f.is_fallback
                 and not f.is_constructor_variables
             ):
-                if self.slither.solc_version not in older_solc_versions:
+                if self.compilation_unit.solc_version not in older_solc_versions:
                     # Since 0.5.1, Solidity allows creating state variable matching a function signature
                     if not self._match_state_variable(contract, f):
                         unimplemented.add(f)
@@ -92,7 +95,7 @@ All unimplemented functions must be implemented on a contract that is meant to b
             list: {'vuln', 'filename,'contract','func'}
         """
         results = []
-        for contract in self.slither.contracts_derived:
+        for contract in self.compilation_unit.contracts_derived:
             functions = self._detect_unimplemented_function(contract)
             if functions:
                 info = [contract, " does not implement functions:\n"]

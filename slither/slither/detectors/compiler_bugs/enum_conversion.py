@@ -48,6 +48,8 @@ class EnumConversion(AbstractDetector):
     WIKI = "https://github.com/crytic/slither/wiki/Detector-Documentation#dangerous-enum-conversion"
     WIKI_TITLE = "Dangerous enum conversion"
     WIKI_DESCRIPTION = "Detect out-of-range `enum` conversion (`solc` < `0.4.5`)."
+
+    # region wiki_exploit_scenario
     WIKI_EXPLOIT_SCENARIO = """
 ```solidity
     pragma solidity 0.4.2;
@@ -61,6 +63,7 @@ class EnumConversion(AbstractDetector):
 }
 ```
 Attackers can trigger unexpected behaviour by calling `bug(1)`."""
+    # endregion wiki_exploit_scenario
 
     WIKI_RECOMMENDATION = "Use a recent compiler version. If `solc` <`0.4.5` is required, check the `enum` conversion range."
 
@@ -68,10 +71,10 @@ Attackers can trigger unexpected behaviour by calling `bug(1)`."""
         """Detect dangerous conversion to enum"""
         results = []
         # If solc version >= 0.4.5 then return
-        if not _uses_vulnerable_solc_version(self.slither.solc_version):
+        if not _uses_vulnerable_solc_version(self.compilation_unit.solc_version):
             return results
 
-        for c in self.slither.contracts:
+        for c in self.compilation_unit.contracts:
             ret = _detect_dangerous_enum_conversions(c)
             for node, var in ret:
                 func_info = [node, " has a dangerous enum conversion\n"]

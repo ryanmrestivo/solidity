@@ -32,6 +32,8 @@ class UnprotectedUpgradeable(AbstractDetector):
 
     WIKI_TITLE = "Unprotected upgradeable contract"
     WIKI_DESCRIPTION = """Detects logic contract that can be destructed."""
+
+    # region wiki_exploit_scenario
     WIKI_EXPLOIT_SCENARIO = """
     ```solidity
     contract Buggy is Initializable{
@@ -48,6 +50,7 @@ class UnprotectedUpgradeable(AbstractDetector):
     }
     ```
     Buggy is an upgradeable contract. Anyone can call initialize on the logic contract, and destruct the contract."""
+    # endregion wiki_exploit_scenario
 
     WIKI_RECOMMENDATION = (
         """Add a constructor to ensure `initialize` cannot be called on the logic contract."""
@@ -56,7 +59,7 @@ class UnprotectedUpgradeable(AbstractDetector):
     def _detect(self):
         results = []
 
-        for contract in self.slither.contracts_derived:
+        for contract in self.compilation_unit.contracts_derived:
             if contract.is_upgradeable:
                 functions_that_can_destroy = _can_be_destroyed(contract)
                 if functions_that_can_destroy:

@@ -21,6 +21,7 @@ from .statements.tx_origin import TxOrigin
 from .statements.assembly import Assembly
 from .operations.low_level_calls import LowLevelCalls
 from .operations.unused_return_values import UnusedReturnValues
+from .operations.unchecked_transfer import UncheckedTransfer
 from .naming_convention.naming_convention import NamingConvention
 from .functions.external_function import ExternalFunction
 from .statements.controlled_delegatecall import ControlledDelegateCall
@@ -76,6 +77,8 @@ from .functions.modifier import ModifierDefaultDetection
 from .variables.predeclaration_usage_local import PredeclarationUsageLocal
 from .statements.unary import IncorrectUnaryExpressionDetection
 from .operations.missing_zero_address_validation import MissingZeroAddressValidation
+from .functions.dead_code import DeadCode
+from .statements.write_after_write import WriteAfterWrite
 
 #
 #
