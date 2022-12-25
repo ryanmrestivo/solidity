@@ -2,7 +2,11 @@
 Module detecting re-used base constructors in inheritance hierarchy.
 """
 
-from slither.detectors.abstract_detector import AbstractDetector, DetectorClassification
+from slither.detectors.abstract_detector import (
+    AbstractDetector,
+    DetectorClassification,
+    ALL_SOLC_VERSIONS_04,
+)
 
 
 # Helper: adds explicitly called constructors with arguments to the results lookup.
@@ -71,13 +75,15 @@ The constructor of `A` is called multiple times in `D` and `E`:
 
     WIKI_RECOMMENDATION = "Remove the duplicate constructor call."
 
+    VULNERABLE_SOLC_VERSIONS = ALL_SOLC_VERSIONS_04
+
     def _detect_explicitly_called_base_constructors(self, contract):
         """
         Detects explicitly calls to base constructors with arguments in the inheritance hierarchy.
         :param contract: The contract to detect explicit calls to a base constructor with arguments to.
         :return: Dictionary of function:list(tuple): { constructor : [(invoking_contract, called_by_constructor]}
         """
-        results = dict()
+        results = {}
 
         # Create a set to track all completed contracts
         processed_contracts = set()
@@ -125,10 +131,6 @@ The constructor of `A` is called multiple times in `D` and `E`:
         """
 
         results = []
-
-        # The bug is not possible with solc >= 0.5.0
-        if not self.compilation_unit.solc_version.startswith("0.4."):
-            return []
 
         # Loop for each contract
         for contract in self.contracts:

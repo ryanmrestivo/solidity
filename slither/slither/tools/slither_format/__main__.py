@@ -23,7 +23,7 @@ available_detectors = [
 ]
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     """
     Parse the underlying arguments for the program.
     :return: Returns the arguments for the program.
@@ -66,7 +66,7 @@ def parse_args():
     group_detector.add_argument(
         "--detect",
         help="Comma-separated list of detectors, defaults to all, "
-        "available detectors: {}".format(", ".join(d for d in available_detectors)),
+        f"available detectors: {', '.join(d for d in available_detectors)}",
         action="store",
         dest="detectors_to_run",
         default="all",
@@ -75,7 +75,7 @@ def parse_args():
     group_detector.add_argument(
         "--exclude",
         help="Comma-separated list of detectors to exclude,"
-        "available detectors: {}".format(", ".join(d for d in available_detectors)),
+        "available detectors: {', '.join(d for d in available_detectors)}",
         action="store",
         dest="detectors_to_exclude",
         default="all",
@@ -90,7 +90,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def main():
+def main() -> None:
     # ------------------------------
     #       Usage: python3 -m slither_format filename
     #       Example: python3 -m slither_format contract.sol

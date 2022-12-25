@@ -10,7 +10,9 @@ from slither.core.declarations import (
     SolidityFunction,
     Contract,
 )
+from slither.core.declarations.function import FunctionLanguage
 from slither.core.declarations.function_contract import FunctionContract
+from slither.core.declarations.function_top_level import FunctionTopLevel
 from slither.core.expressions import (
     Literal,
     AssignmentOperation,
@@ -33,6 +35,7 @@ from slither.solc_parsing.yul.evm_functions import (
     unary_ops,
     binary_ops,
 )
+from slither.solc_parsing.expressions.find_variable import find_top_level
 from slither.visitors.expression.find_calls import FindCalls
 from slither.visitors.expression.read_var import ReadVar
 from slither.visitors.expression.write_var import WriteVar
@@ -221,7 +224,7 @@ class YulFunction(YulScope):
             func.set_contract(root.contract)
             func.set_contract_declarer(root.contract)
         func.compilation_unit = root.compilation_unit
-        func.scope = root.id
+        func.internal_scope = root.id
         func.is_implemented = True
         self.node_scope = node_scope
 
@@ -277,6 +280,7 @@ class YulBlock(YulScope):
 
     """
 
+    # pylint: disable=redefined-slots-in-subclass
     __slots__ = ["_entrypoint", "_parent_func", "_nodes", "node_scope"]
 
     def __init__(
@@ -353,7 +357,19 @@ def convert_yul_block(
 def convert_yul_function_definition(
     root: YulScope, parent: YulNode, ast: Dict, node_scope: Union[Function, Scope]
 ) -> YulNode:
-    func = FunctionContract(root.compilation_unit)
+    top_node_scope = node_scope
+    while not isinstance(top_node_scope, Function):
+        top_node_scope = top_node_scope.father
+
+    if isinstance(top_node_scope, FunctionTopLevel):
+        scope = root.contract.file_scope
+        func = FunctionTopLevel(root.compilation_unit, scope)
+        # Note: we do not add the function in the scope
+        # While its a top level function, it is not accessible outside of the function definition
+        # In practice we should probably have a specific function type for function defined within a function
+    else:
+        func = FunctionContract(root.compilation_unit)
+    func.function_language = FunctionLanguage.Yul
     yul_function = YulFunction(func, root, ast, node_scope)
 
     root.contract.add_function(func)
@@ -441,7 +457,7 @@ def convert_yul_switch(
     expression_ast = ast["expression"]
 
     # this variable stores the result of the expression so we don't accidentally compute it more than once
-    switch_expr_var = "switch_expr_{}".format(ast["src"].replace(":", "_"))
+    switch_expr_var = f"switch_expr_{ast['src'].replace(':', '_')}"
 
     rewritten_switch = {
         "nodeType": "YulBlock",
@@ -659,7 +675,7 @@ def parse_yul_variable_declaration(
     the assignment
     """
 
-    if not ast["value"]:
+    if "value" not in ast or not ast["value"]:
         return None
 
     return _parse_yul_assignment_common(root, node, ast, "variables")
@@ -707,6 +723,48 @@ def parse_yul_function_call(root: YulScope, node: YulNode, ast: Dict) -> Optiona
     raise SlitherException(f"unexpected function call target type {str(type(ident.value))}")
 
 
+def _check_for_state_variable_name(root: YulScope, potential_name: str) -> Optional[Identifier]:
+    root_function = root.function
+    if isinstance(root_function, FunctionContract):
+        var = root_function.contract.get_state_variable_from_name(potential_name)
+        if var:
+            return Identifier(var)
+    return None
+
+
+def _parse_yul_magic_suffixes(name: str, root: YulScope) -> Optional[Expression]:
+    # check for magic suffixes
+    # TODO: the following leads to wrong IR
+    # Currently SlithIR doesnt support raw access to memory
+    # So things like .offset/.slot will return the variable
+    # Instaed of the actual offset/slot
+    if name.endswith(("_slot", ".slot")):
+        potential_name = name[:-5]
+        variable_found = _check_for_state_variable_name(root, potential_name)
+        if variable_found:
+            return variable_found
+        var = root.function.get_local_variable_from_name(potential_name)
+        if var and var.is_storage:
+            return Identifier(var)
+    if name.endswith(("_offset", ".offset")):
+        potential_name = name[:-7]
+        variable_found = _check_for_state_variable_name(root, potential_name)
+        if variable_found:
+            return variable_found
+        var = root.function.get_local_variable_from_name(potential_name)
+        if var and var.location == "calldata":
+            return Identifier(var)
+    if name.endswith(".length"):
+        # TODO: length should create a new IP operation LENGTH var
+        # The code below is an hotfix to allow slither to process length in yul
+        # Until we have a better support
+        potential_name = name[:-7]
+        var = root.function.get_local_variable_from_name(potential_name)
+        if var and var.location == "calldata":
+            return Identifier(var)
+    return None
+
+
 def parse_yul_identifier(root: YulScope, _node: YulNode, ast: Dict) -> Optional[Expression]:
     name = ast["name"]
 
@@ -736,27 +794,29 @@ def parse_yul_identifier(root: YulScope, _node: YulNode, ast: Dict) -> Optional[
     if func:
         return Identifier(func.underlying)
 
-    # check for magic suffixes
-    if name.endswith("_slot") or name.endswith(".slot"):
-        potential_name = name[:-5]
-        var = root.function.contract.get_state_variable_from_name(potential_name)
-        if var:
-            return Identifier(var)
-        var = root.function.get_local_variable_from_name(potential_name)
-        if var and var.is_storage:
-            return Identifier(var)
-    if name.endswith("_offset") or name.endswith(".offset"):
-        potential_name = name[:-7]
-        var = root.function.contract.get_state_variable_from_name(potential_name)
-        if var:
-            return Identifier(var)
+    magic_suffix = _parse_yul_magic_suffixes(name, root)
+    if magic_suffix:
+        return magic_suffix
+
+    ret, _ = find_top_level(name, root.contract.file_scope)
+    if ret:
+        return Identifier(ret)
 
     raise SlitherException(f"unresolved reference to identifier {name}")
 
 
 def parse_yul_literal(_root: YulScope, _node: YulNode, ast: Dict) -> Optional[Expression]:
     kind = ast["kind"]
-    value = ast["value"]
+
+    if kind == "string":
+        # Solc 0.8.0 use value, 0.8.16 use hexValue - not sure when this changed was made
+        if "value" in ast:
+            value = ast["value"]
+        else:
+            value = ast["hexValue"]
+    else:
+        # number/bool
+        value = ast["value"]
 
     if not kind:
         kind = "bool" if value in ["true", "false"] else "uint256"
@@ -806,7 +866,7 @@ def vars_to_typestr(rets: List[Expression]) -> str:
         return ""
     if len(rets) == 1:
         return str(rets[0].type)
-    return "tuple({})".format(",".join(str(ret.type) for ret in rets))
+    return f"tuple({','.join(str(ret.type) for ret in rets)})"
 
 
 def vars_to_val(vars_to_convert):

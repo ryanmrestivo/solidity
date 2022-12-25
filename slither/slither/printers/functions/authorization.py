@@ -43,7 +43,7 @@ class PrinterWrittenVariablesAndAuthorization(AbstractPrinter):
         for contract in self.contracts:
             if contract.is_top_level:
                 continue
-            txt += "\nContract %s\n" % contract.name
+            txt += f"\nContract {contract.name}\n"
             table = MyPrettyTable(
                 ["Function", "State variables written", "Conditions on msg.sender"]
             )
@@ -54,8 +54,8 @@ class PrinterWrittenVariablesAndAuthorization(AbstractPrinter):
                 table.add_row(
                     [
                         function.name,
-                        str(state_variables_written),
-                        str(msg_sender_condition),
+                        str(sorted(state_variables_written)),
+                        str(sorted(msg_sender_condition)),
                     ]
                 )
             all_tables.append((contract.name, table))

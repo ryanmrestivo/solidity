@@ -14,7 +14,7 @@ from slither.formatters.attributes.incorrect_solc import custom_format
 # 4: version number
 
 # pylint: disable=anomalous-backslash-in-string
-PATTERN = re.compile("(\^|>|>=|<|<=)?([ ]+)?(\d+)\.(\d+)\.(\d+)")
+PATTERN = re.compile(r"(\^|>|>=|<|<=)?([ ]+)?(\d+)\.(\d+)\.(\d+)")
 
 
 class IncorrectSolc(AbstractDetector):
@@ -43,6 +43,14 @@ Deploy with any of the following Solidity versions:
 - 0.5.16 - 0.5.17
 - 0.6.11 - 0.6.12
 - 0.7.5 - 0.7.6
+- 0.8.16
+
+The recommendations take into account:
+- Risks related to recent releases
+- Risks of complex code generation changes
+- Risks of new language features
+- Risks of known bugs
+
 Use a simple pragma version that allows any of these versions.
 Consider using the latest version of Solidity for testing."""
     # endregion wiki_recommendation
@@ -51,22 +59,13 @@ Consider using the latest version of Solidity for testing."""
     OLD_VERSION_TXT = "allows old versions"
     LESS_THAN_TXT = "uses lesser than"
 
-    TOO_RECENT_VERSION_TXT = (
-        "necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6"
-    )
+    TOO_RECENT_VERSION_TXT = "necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.16"
     BUGGY_VERSION_TXT = (
         "is known to contain severe issues (https://solidity.readthedocs.io/en/latest/bugs.html)"
     )
 
     # Indicates the allowed versions. Must be formatted in increasing order.
-    ALLOWED_VERSIONS = [
-        "0.5.16",
-        "0.5.17",
-        "0.6.11",
-        "0.6.12",
-        "0.7.5",
-        "0.7.6",
-    ]
+    ALLOWED_VERSIONS = ["0.5.16", "0.5.17", "0.6.11", "0.6.12", "0.7.5", "0.7.6", "0.8.16"]
 
     # Indicates the versions that should not be used.
     BUGGY_VERSIONS = [
@@ -80,6 +79,8 @@ Consider using the latest version of Solidity for testing."""
         "^0.5.14",
         "0.6.9",
         "^0.6.9",
+        "0.8.8",
+        "^0.8.8",
     ]
 
     def _check_version(self, version):
@@ -87,6 +88,8 @@ Consider using the latest version of Solidity for testing."""
         if op and op not in [">", ">=", "^"]:
             return self.LESS_THAN_TXT
         version_number = ".".join(version[2:])
+        if version_number in self.BUGGY_VERSIONS:
+            return self.BUGGY_VERSION_TXT
         if version_number not in self.ALLOWED_VERSIONS:
             if list(map(int, version[2:])) > list(map(int, self.ALLOWED_VERSIONS[-1].split("."))):
                 return self.TOO_RECENT_VERSION_TXT
@@ -144,11 +147,20 @@ Consider using the latest version of Solidity for testing."""
                 results.append(json)
 
         if self.compilation_unit.solc_version not in self.ALLOWED_VERSIONS:
-            info = [
-                "solc-",
-                self.compilation_unit.solc_version,
-                " is not recommended for deployment\n",
-            ]
+
+            if self.compilation_unit.solc_version in self.BUGGY_VERSIONS:
+                info = [
+                    "solc-",
+                    self.compilation_unit.solc_version,
+                    " ",
+                    self.BUGGY_VERSION_TXT,
+                ]
+            else:
+                info = [
+                    "solc-",
+                    self.compilation_unit.solc_version,
+                    " is not recommended for deployment\n",
+                ]
 
             json = self.generate_result(info)
 

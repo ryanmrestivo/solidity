@@ -46,6 +46,20 @@ classification_txt = {
 }
 
 
+def make_solc_versions(minor: int, patch_min: int, patch_max: int) -> List[str]:
+    """
+    Create a list of solc version: [0.minor.patch_min .... 0.minor.patch_max]
+    """
+    return [f"0.{minor}.{x}" for x in range(patch_min, patch_max + 1)]
+
+
+ALL_SOLC_VERSIONS_04 = make_solc_versions(4, 0, 26)
+ALL_SOLC_VERSIONS_05 = make_solc_versions(5, 0, 17)
+ALL_SOLC_VERSIONS_06 = make_solc_versions(6, 0, 12)
+ALL_SOLC_VERSIONS_07 = make_solc_versions(7, 0, 6)
+# No VERSIONS_08 as it is still in dev
+
+
 class AbstractDetector(metaclass=abc.ABCMeta):
     ARGUMENT = ""  # run the detector with slither.py --ARGUMENT
     HELP = ""  # help information
@@ -61,6 +75,10 @@ class AbstractDetector(metaclass=abc.ABCMeta):
 
     STANDARD_JSON = True
 
+    # list of vulnerable solc versions as strings (e.g. ["0.4.25", "0.5.0"])
+    # If the detector is meant to run on all versions, use None
+    VULNERABLE_SOLC_VERSIONS: Optional[List[str]] = None
+
     def __init__(
         self, compilation_unit: SlitherCompilationUnit, slither: "Slither", logger: Logger
     ):
@@ -72,27 +90,27 @@ class AbstractDetector(metaclass=abc.ABCMeta):
 
         if not self.HELP:
             raise IncorrectDetectorInitialization(
-                "HELP is not initialized {}".format(self.__class__.__name__)
+                f"HELP is not initialized {self.__class__.__name__}"
             )
 
         if not self.ARGUMENT:
             raise IncorrectDetectorInitialization(
-                "ARGUMENT is not initialized {}".format(self.__class__.__name__)
+                f"ARGUMENT is not initialized {self.__class__.__name__}"
             )
 
         if not self.WIKI:
             raise IncorrectDetectorInitialization(
-                "WIKI is not initialized {}".format(self.__class__.__name__)
+                f"WIKI is not initialized {self.__class__.__name__}"
             )
 
         if not self.WIKI_TITLE:
             raise IncorrectDetectorInitialization(
-                "WIKI_TITLE is not initialized {}".format(self.__class__.__name__)
+                f"WIKI_TITLE is not initialized {self.__class__.__name__}"
             )
 
         if not self.WIKI_DESCRIPTION:
             raise IncorrectDetectorInitialization(
-                "WIKI_DESCRIPTION is not initialized {}".format(self.__class__.__name__)
+                f"WIKI_DESCRIPTION is not initialized {self.__class__.__name__}"
             )
 
         if not self.WIKI_EXPLOIT_SCENARIO and self.IMPACT not in [
@@ -100,17 +118,22 @@ class AbstractDetector(metaclass=abc.ABCMeta):
             DetectorClassification.OPTIMIZATION,
         ]:
             raise IncorrectDetectorInitialization(
-                "WIKI_EXPLOIT_SCENARIO is not initialized {}".format(self.__class__.__name__)
+                f"WIKI_EXPLOIT_SCENARIO is not initialized {self.__class__.__name__}"
             )
 
         if not self.WIKI_RECOMMENDATION:
             raise IncorrectDetectorInitialization(
-                "WIKI_RECOMMENDATION is not initialized {}".format(self.__class__.__name__)
+                f"WIKI_RECOMMENDATION is not initialized {self.__class__.__name__}"
+            )
+
+        if self.VULNERABLE_SOLC_VERSIONS is not None and not self.VULNERABLE_SOLC_VERSIONS:
+            raise IncorrectDetectorInitialization(
+                f"VULNERABLE_SOLC_VERSIONS should not be an empty list {self.__class__.__name__}"
             )
 
         if re.match("^[a-zA-Z0-9_-]*$", self.ARGUMENT) is None:
             raise IncorrectDetectorInitialization(
-                "ARGUMENT has illegal character {}".format(self.__class__.__name__)
+                f"ARGUMENT has illegal character {self.__class__.__name__}"
             )
 
         if self.IMPACT not in [
@@ -121,7 +144,7 @@ class AbstractDetector(metaclass=abc.ABCMeta):
             DetectorClassification.OPTIMIZATION,
         ]:
             raise IncorrectDetectorInitialization(
-                "IMPACT is not initialized {}".format(self.__class__.__name__)
+                f"IMPACT is not initialized {self.__class__.__name__}"
             )
 
         if self.CONFIDENCE not in [
@@ -132,12 +155,17 @@ class AbstractDetector(metaclass=abc.ABCMeta):
             DetectorClassification.OPTIMIZATION,
         ]:
             raise IncorrectDetectorInitialization(
-                "CONFIDENCE is not initialized {}".format(self.__class__.__name__)
+                f"CONFIDENCE is not initialized {self.__class__.__name__}"
             )
 
     def _log(self, info: str) -> None:
         if self.logger:
             self.logger.info(self.color(info))
+
+    def _uses_vulnerable_solc_version(self) -> bool:
+        if self.VULNERABLE_SOLC_VERSIONS:
+            return self.compilation_unit.solc_version in self.VULNERABLE_SOLC_VERSIONS
+        return True
 
     @abc.abstractmethod
     def _detect(self) -> List[Output]:
@@ -147,7 +175,12 @@ class AbstractDetector(metaclass=abc.ABCMeta):
     # pylint: disable=too-many-branches
     def detect(self) -> List[Dict]:
         results: List[Dict] = []
-        # only keep valid result, and remove dupplicate
+
+        # check solc version
+        if not self._uses_vulnerable_solc_version():
+            return results
+
+        # only keep valid result, and remove duplicate
         # Keep only dictionaries
         for r in [output.data for output in self._detect()]:
             if self.compilation_unit.core.valid_result(r) and r not in results:
@@ -160,7 +193,7 @@ class AbstractDetector(metaclass=abc.ABCMeta):
                     self._format(self.compilation_unit, result)
                     if not "patches" in result:
                         continue
-                    result["patches_diff"] = dict()
+                    result["patches_diff"] = {}
                     for file in result["patches"]:
                         original_txt = self.compilation_unit.core.source_code[file].encode("utf8")
                         patched_txt = original_txt
@@ -189,9 +222,7 @@ class AbstractDetector(metaclass=abc.ABCMeta):
         if results and self.slither.triage_mode:
             while True:
                 indexes = input(
-                    'Results to hide during next runs: "0,1,...,{}" or "All" (enter to not hide results): '.format(
-                        len(results)
-                    )
+                    f'Results to hide during next runs: "0,1,...,{len(results)}" or "All" (enter to not hide results):\n'
                 )
                 if indexes == "All":
                     self.slither.save_results_to_hide(results)
@@ -210,6 +241,8 @@ class AbstractDetector(metaclass=abc.ABCMeta):
                     return [r for (idx, r) in enumerate(results) if idx not in indexes_converted]
                 except ValueError:
                     self.logger.error(yellow("Malformed input. Example of valid input: 0,1,2,3"))
+        results = sorted(results, key=lambda x: x["id"])
+
         return results
 
     @property
@@ -243,7 +276,7 @@ class AbstractDetector(metaclass=abc.ABCMeta):
         info = "\n"
         for idx, result in enumerate(results):
             if self.slither.triage_mode:
-                info += "{}: ".format(idx)
+                info += f"{idx}: "
             info += result["description"]
-        info += "Reference: {}".format(self.WIKI)
+        info += f"Reference: {self.WIKI}"
         self._log(info)

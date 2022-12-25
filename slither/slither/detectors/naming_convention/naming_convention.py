@@ -89,16 +89,12 @@ Solidity defines a [naming convention](https://solidity.readthedocs.io/en/v0.4.2
                 if func.is_constructor:
                     continue
                 if not self.is_mixed_case(func.name):
-                    if (
-                        func.visibility
-                        in [
-                            "internal",
-                            "private",
-                        ]
-                        and self.is_mixed_case_with_underscore(func.name)
-                    ):
+                    if func.visibility in [
+                        "internal",
+                        "private",
+                    ] and self.is_mixed_case_with_underscore(func.name):
                         continue
-                    if func.name.startswith("echidna_") or func.name.startswith("crytic_"):
+                    if func.name.startswith(("echidna_", "crytic_")):
                         continue
                     info = ["Function ", func, " is not in mixedCase\n"]
 
@@ -123,22 +119,21 @@ Solidity defines a [naming convention](https://solidity.readthedocs.io/en/v0.4.2
 
             for var in contract.state_variables_declared:
                 if self.should_avoid_name(var.name):
-                    if not self.is_upper_case_with_underscores(var.name):
-                        info = [
-                            "Variable ",
-                            var,
-                            " used l, O, I, which should not be used\n",
-                        ]
+                    info = [
+                        "Variable ",
+                        var,
+                        " is single letter l, O, or I, which should not be used\n",
+                    ]
 
-                        res = self.generate_result(info)
-                        res.add(
-                            var,
-                            {
-                                "target": "variable",
-                                "convention": "l_O_I_should_not_be_used",
-                            },
-                        )
-                        results.append(res)
+                    res = self.generate_result(info)
+                    res.add(
+                        var,
+                        {
+                            "target": "variable",
+                            "convention": "l_O_I_should_not_be_used",
+                        },
+                    )
+                    results.append(res)
 
                 if var.is_constant is True:
                     # For ERC20 compatibility

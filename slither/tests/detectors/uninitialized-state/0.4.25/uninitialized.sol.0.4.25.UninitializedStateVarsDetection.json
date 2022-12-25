@@ -4,234 +4,10 @@
             "elements": [
                 {
                     "type": "variable",
-                    "name": "destination",
-                    "source_mapping": {
-                        "start": 58,
-                        "length": 19,
-                        "filename_used": "/GENERIC_PATH",
-                        "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
-                        "filename_absolute": "/GENERIC_PATH",
-                        "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
-                        "is_dependency": false,
-                        "lines": [
-                            5
-                        ],
-                        "starting_column": 5,
-                        "ending_column": 24
-                    },
-                    "type_specific_fields": {
-                        "parent": {
-                            "type": "contract",
-                            "name": "Uninitialized",
-                            "source_mapping": {
-                                "start": 29,
-                                "length": 140,
-                                "filename_used": "/GENERIC_PATH",
-                                "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
-                                "filename_absolute": "/GENERIC_PATH",
-                                "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
-                                "is_dependency": false,
-                                "lines": [
-                                    3,
-                                    4,
-                                    5,
-                                    6,
-                                    7,
-                                    8,
-                                    9,
-                                    10,
-                                    11
-                                ],
-                                "starting_column": 1,
-                                "ending_column": 2
-                            }
-                        }
-                    }
-                },
-                {
-                    "type": "function",
-                    "name": "transfer",
-                    "source_mapping": {
-                        "start": 84,
-                        "length": 82,
-                        "filename_used": "/GENERIC_PATH",
-                        "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
-                        "filename_absolute": "/GENERIC_PATH",
-                        "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
-                        "is_dependency": false,
-                        "lines": [
-                            7,
-                            8,
-                            9
-                        ],
-                        "starting_column": 5,
-                        "ending_column": 6
-                    },
-                    "type_specific_fields": {
-                        "parent": {
-                            "type": "contract",
-                            "name": "Uninitialized",
-                            "source_mapping": {
-                                "start": 29,
-                                "length": 140,
-                                "filename_used": "/GENERIC_PATH",
-                                "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
-                                "filename_absolute": "/GENERIC_PATH",
-                                "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
-                                "is_dependency": false,
-                                "lines": [
-                                    3,
-                                    4,
-                                    5,
-                                    6,
-                                    7,
-                                    8,
-                                    9,
-                                    10,
-                                    11
-                                ],
-                                "starting_column": 1,
-                                "ending_column": 2
-                            }
-                        },
-                        "signature": "transfer()"
-                    }
-                }
-            ],
-            "description": "Uninitialized.destination (tests/detectors/uninitialized-state/0.4.25/uninitialized.sol#5) is never initialized. It is used in:\n\t- Uninitialized.transfer() (tests/detectors/uninitialized-state/0.4.25/uninitialized.sol#7-9)\n",
-            "markdown": "[Uninitialized.destination](tests/detectors/uninitialized-state/0.4.25/uninitialized.sol#L5) is never initialized. It is used in:\n\t- [Uninitialized.transfer()](tests/detectors/uninitialized-state/0.4.25/uninitialized.sol#L7-L9)\n",
-            "first_markdown_element": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol#L5",
-            "id": "e4711aebbd53922a9fe1e728917bf8e98eac065305e20d766b6b552debe79e44",
-            "check": "uninitialized-state",
-            "impact": "High",
-            "confidence": "High"
-        },
-        {
-            "elements": [
-                {
-                    "type": "variable",
-                    "name": "balances",
-                    "source_mapping": {
-                        "start": 192,
-                        "length": 34,
-                        "filename_used": "/GENERIC_PATH",
-                        "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
-                        "filename_absolute": "/GENERIC_PATH",
-                        "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
-                        "is_dependency": false,
-                        "lines": [
-                            15
-                        ],
-                        "starting_column": 5,
-                        "ending_column": 39
-                    },
-                    "type_specific_fields": {
-                        "parent": {
-                            "type": "contract",
-                            "name": "Test",
-                            "source_mapping": {
-                                "start": 172,
-                                "length": 332,
-                                "filename_used": "/GENERIC_PATH",
-                                "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
-                                "filename_absolute": "/GENERIC_PATH",
-                                "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
-                                "is_dependency": false,
-                                "lines": [
-                                    14,
-                                    15,
-                                    16,
-                                    17,
-                                    18,
-                                    19,
-                                    20,
-                                    21,
-                                    22,
-                                    23,
-                                    24,
-                                    25,
-                                    26,
-                                    27
-                                ],
-                                "starting_column": 1,
-                                "ending_column": 2
-                            }
-                        }
-                    }
-                },
-                {
-                    "type": "function",
-                    "name": "use",
-                    "source_mapping": {
-                        "start": 359,
-                        "length": 143,
-                        "filename_used": "/GENERIC_PATH",
-                        "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
-                        "filename_absolute": "/GENERIC_PATH",
-                        "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
-                        "is_dependency": false,
-                        "lines": [
-                            23,
-                            24,
-                            25,
-                            26
-                        ],
-                        "starting_column": 5,
-                        "ending_column": 6
-                    },
-                    "type_specific_fields": {
-                        "parent": {
-                            "type": "contract",
-                            "name": "Test",
-                            "source_mapping": {
-                                "start": 172,
-                                "length": 332,
-                                "filename_used": "/GENERIC_PATH",
-                                "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
-                                "filename_absolute": "/GENERIC_PATH",
-                                "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
-                                "is_dependency": false,
-                                "lines": [
-                                    14,
-                                    15,
-                                    16,
-                                    17,
-                                    18,
-                                    19,
-                                    20,
-                                    21,
-                                    22,
-                                    23,
-                                    24,
-                                    25,
-                                    26,
-                                    27
-                                ],
-                                "starting_column": 1,
-                                "ending_column": 2
-                            }
-                        },
-                        "signature": "use()"
-                    }
-                }
-            ],
-            "description": "Test.balances (tests/detectors/uninitialized-state/0.4.25/uninitialized.sol#15) is never initialized. It is used in:\n\t- Test.use() (tests/detectors/uninitialized-state/0.4.25/uninitialized.sol#23-26)\n",
-            "markdown": "[Test.balances](tests/detectors/uninitialized-state/0.4.25/uninitialized.sol#L15) is never initialized. It is used in:\n\t- [Test.use()](tests/detectors/uninitialized-state/0.4.25/uninitialized.sol#L23-L26)\n",
-            "first_markdown_element": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol#L15",
-            "id": "a2750d175b02d51aeb47a4576f74725ba991d3c8cf828a33ee78ccc34cf9e7d7",
-            "check": "uninitialized-state",
-            "impact": "High",
-            "confidence": "High"
-        },
-        {
-            "elements": [
-                {
-                    "type": "variable",
                     "name": "st",
                     "source_mapping": {
                         "start": 698,
                         "length": 15,
-                        "filename_used": "/GENERIC_PATH",
                         "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
                         "filename_absolute": "/GENERIC_PATH",
                         "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
@@ -249,7 +25,6 @@
                             "source_mapping": {
                                 "start": 644,
                                 "length": 354,
-                                "filename_used": "/GENERIC_PATH",
                                 "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
                                 "filename_absolute": "/GENERIC_PATH",
                                 "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
@@ -285,7 +60,6 @@
                     "source_mapping": {
                         "start": 878,
                         "length": 117,
-                        "filename_used": "/GENERIC_PATH",
                         "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
                         "filename_absolute": "/GENERIC_PATH",
                         "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
@@ -306,7 +80,6 @@
                             "source_mapping": {
                                 "start": 644,
                                 "length": 354,
-                                "filename_used": "/GENERIC_PATH",
                                 "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
                                 "filename_absolute": "/GENERIC_PATH",
                                 "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
@@ -350,11 +123,123 @@
             "elements": [
                 {
                     "type": "variable",
+                    "name": "balances",
+                    "source_mapping": {
+                        "start": 192,
+                        "length": 34,
+                        "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
+                        "filename_absolute": "/GENERIC_PATH",
+                        "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
+                        "is_dependency": false,
+                        "lines": [
+                            15
+                        ],
+                        "starting_column": 5,
+                        "ending_column": 39
+                    },
+                    "type_specific_fields": {
+                        "parent": {
+                            "type": "contract",
+                            "name": "Test",
+                            "source_mapping": {
+                                "start": 172,
+                                "length": 332,
+                                "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
+                                "filename_absolute": "/GENERIC_PATH",
+                                "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
+                                "is_dependency": false,
+                                "lines": [
+                                    14,
+                                    15,
+                                    16,
+                                    17,
+                                    18,
+                                    19,
+                                    20,
+                                    21,
+                                    22,
+                                    23,
+                                    24,
+                                    25,
+                                    26,
+                                    27
+                                ],
+                                "starting_column": 1,
+                                "ending_column": 2
+                            }
+                        }
+                    }
+                },
+                {
+                    "type": "function",
+                    "name": "use",
+                    "source_mapping": {
+                        "start": 359,
+                        "length": 143,
+                        "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
+                        "filename_absolute": "/GENERIC_PATH",
+                        "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
+                        "is_dependency": false,
+                        "lines": [
+                            23,
+                            24,
+                            25,
+                            26
+                        ],
+                        "starting_column": 5,
+                        "ending_column": 6
+                    },
+                    "type_specific_fields": {
+                        "parent": {
+                            "type": "contract",
+                            "name": "Test",
+                            "source_mapping": {
+                                "start": 172,
+                                "length": 332,
+                                "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
+                                "filename_absolute": "/GENERIC_PATH",
+                                "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
+                                "is_dependency": false,
+                                "lines": [
+                                    14,
+                                    15,
+                                    16,
+                                    17,
+                                    18,
+                                    19,
+                                    20,
+                                    21,
+                                    22,
+                                    23,
+                                    24,
+                                    25,
+                                    26,
+                                    27
+                                ],
+                                "starting_column": 1,
+                                "ending_column": 2
+                            }
+                        },
+                        "signature": "use()"
+                    }
+                }
+            ],
+            "description": "Test.balances (tests/detectors/uninitialized-state/0.4.25/uninitialized.sol#15) is never initialized. It is used in:\n\t- Test.use() (tests/detectors/uninitialized-state/0.4.25/uninitialized.sol#23-26)\n",
+            "markdown": "[Test.balances](tests/detectors/uninitialized-state/0.4.25/uninitialized.sol#L15) is never initialized. It is used in:\n\t- [Test.use()](tests/detectors/uninitialized-state/0.4.25/uninitialized.sol#L23-L26)\n",
+            "first_markdown_element": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol#L15",
+            "id": "a2750d175b02d51aeb47a4576f74725ba991d3c8cf828a33ee78ccc34cf9e7d7",
+            "check": "uninitialized-state",
+            "impact": "High",
+            "confidence": "High"
+        },
+        {
+            "elements": [
+                {
+                    "type": "variable",
                     "name": "v",
                     "source_mapping": {
                         "start": 751,
                         "length": 6,
-                        "filename_used": "/GENERIC_PATH",
                         "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
                         "filename_absolute": "/GENERIC_PATH",
                         "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
@@ -372,7 +257,6 @@
                             "source_mapping": {
                                 "start": 644,
                                 "length": 354,
-                                "filename_used": "/GENERIC_PATH",
                                 "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
                                 "filename_absolute": "/GENERIC_PATH",
                                 "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
@@ -408,7 +292,6 @@
                     "source_mapping": {
                         "start": 820,
                         "length": 52,
-                        "filename_used": "/GENERIC_PATH",
                         "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
                         "filename_absolute": "/GENERIC_PATH",
                         "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
@@ -428,7 +311,6 @@
                             "source_mapping": {
                                 "start": 644,
                                 "length": 354,
-                                "filename_used": "/GENERIC_PATH",
                                 "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
                                 "filename_absolute": "/GENERIC_PATH",
                                 "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
@@ -464,6 +346,108 @@
             "markdown": "[Test2.v](tests/detectors/uninitialized-state/0.4.25/uninitialized.sol#L47) is never initialized. It is used in:\n\t- [Test2.init()](tests/detectors/uninitialized-state/0.4.25/uninitialized.sol#L49-L51)\n",
             "first_markdown_element": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol#L47",
             "id": "bf96eee949943a12926cf1407a2df2b07e99b30a6fc2e78aebf088cdefcf77a7",
+            "check": "uninitialized-state",
+            "impact": "High",
+            "confidence": "High"
+        },
+        {
+            "elements": [
+                {
+                    "type": "variable",
+                    "name": "destination",
+                    "source_mapping": {
+                        "start": 58,
+                        "length": 19,
+                        "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
+                        "filename_absolute": "/GENERIC_PATH",
+                        "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
+                        "is_dependency": false,
+                        "lines": [
+                            5
+                        ],
+                        "starting_column": 5,
+                        "ending_column": 24
+                    },
+                    "type_specific_fields": {
+                        "parent": {
+                            "type": "contract",
+                            "name": "Uninitialized",
+                            "source_mapping": {
+                                "start": 29,
+                                "length": 140,
+                                "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
+                                "filename_absolute": "/GENERIC_PATH",
+                                "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
+                                "is_dependency": false,
+                                "lines": [
+                                    3,
+                                    4,
+                                    5,
+                                    6,
+                                    7,
+                                    8,
+                                    9,
+                                    10,
+                                    11
+                                ],
+                                "starting_column": 1,
+                                "ending_column": 2
+                            }
+                        }
+                    }
+                },
+                {
+                    "type": "function",
+                    "name": "transfer",
+                    "source_mapping": {
+                        "start": 84,
+                        "length": 82,
+                        "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
+                        "filename_absolute": "/GENERIC_PATH",
+                        "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
+                        "is_dependency": false,
+                        "lines": [
+                            7,
+                            8,
+                            9
+                        ],
+                        "starting_column": 5,
+                        "ending_column": 6
+                    },
+                    "type_specific_fields": {
+                        "parent": {
+                            "type": "contract",
+                            "name": "Uninitialized",
+                            "source_mapping": {
+                                "start": 29,
+                                "length": 140,
+                                "filename_relative": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
+                                "filename_absolute": "/GENERIC_PATH",
+                                "filename_short": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol",
+                                "is_dependency": false,
+                                "lines": [
+                                    3,
+                                    4,
+                                    5,
+                                    6,
+                                    7,
+                                    8,
+                                    9,
+                                    10,
+                                    11
+                                ],
+                                "starting_column": 1,
+                                "ending_column": 2
+                            }
+                        },
+                        "signature": "transfer()"
+                    }
+                }
+            ],
+            "description": "Uninitialized.destination (tests/detectors/uninitialized-state/0.4.25/uninitialized.sol#5) is never initialized. It is used in:\n\t- Uninitialized.transfer() (tests/detectors/uninitialized-state/0.4.25/uninitialized.sol#7-9)\n",
+            "markdown": "[Uninitialized.destination](tests/detectors/uninitialized-state/0.4.25/uninitialized.sol#L5) is never initialized. It is used in:\n\t- [Uninitialized.transfer()](tests/detectors/uninitialized-state/0.4.25/uninitialized.sol#L7-L9)\n",
+            "first_markdown_element": "tests/detectors/uninitialized-state/0.4.25/uninitialized.sol#L5",
+            "id": "e4711aebbd53922a9fe1e728917bf8e98eac065305e20d766b6b552debe79e44",
             "check": "uninitialized-state",
             "impact": "High",
             "confidence": "High"

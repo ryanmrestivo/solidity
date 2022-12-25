@@ -12,7 +12,7 @@ def write_file(
     content: str,
     allow_overwrite: bool = True,
     discard_if_exist: bool = False,
-):
+) -> None:
     """
     Write the content into output_dir/filename
     :param output_dir:
@@ -32,5 +32,5 @@ def write_file(
         logger.info(yellow(f"Overwrite {file_to_write}"))
     else:
         logger.info(green(f"Write {file_to_write}"))
-    with open(file_to_write, "w") as f:
+    with open(file_to_write, "w", encoding="utf8") as f:
         f.write(content)

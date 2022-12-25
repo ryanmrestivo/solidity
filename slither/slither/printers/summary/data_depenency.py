@@ -39,21 +39,21 @@ class DataDependency(AbstractPrinter):
         for c in self.contracts:
             if c.is_top_level:
                 continue
-            txt += "\nContract %s\n" % c.name
+            txt += f"\nContract {c.name}\n"
             table = MyPrettyTable(["Variable", "Dependencies"])
             for v in c.state_variables:
-                table.add_row([v.name, _get(v, c)])
+                table.add_row([v.name, sorted(_get(v, c))])
 
             txt += str(table)
 
             txt += "\n"
             for f in c.functions_and_modifiers_declared:
-                txt += "\nFunction %s\n" % f.full_name
+                txt += f"\nFunction {f.full_name}\n"
                 table = MyPrettyTable(["Variable", "Dependencies"])
                 for v in f.variables:
-                    table.add_row([v.name, _get(v, f)])
+                    table.add_row([v.name, sorted(_get(v, f))])
                 for v in c.state_variables:
-                    table.add_row([v.canonical_name, _get(v, f)])
+                    table.add_row([v.canonical_name, sorted(_get(v, f))])
                 txt += str(table)
             self.info(txt)
 

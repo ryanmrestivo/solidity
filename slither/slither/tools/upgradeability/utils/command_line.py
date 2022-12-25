@@ -1,8 +1,10 @@
-from slither.tools.upgradeability.checks.abstract_checks import classification_txt
+from typing import List, Union, Dict, Type
+
+from slither.tools.upgradeability.checks.abstract_checks import classification_txt, AbstractCheck
 from slither.utils.myprettytable import MyPrettyTable
 
 
-def output_wiki(detector_classes, filter_wiki):
+def output_wiki(detector_classes: List[Type[AbstractCheck]], filter_wiki: str) -> None:
     # Sort by impact, confidence, and name
     detectors_list = sorted(
         detector_classes, key=lambda element: (element.IMPACT, element.ARGUMENT)
@@ -18,10 +20,10 @@ def output_wiki(detector_classes, filter_wiki):
         exploit_scenario = detector.WIKI_EXPLOIT_SCENARIO
         recommendation = detector.WIKI_RECOMMENDATION
 
-        print("\n## {}".format(title))
+        print(f"\n## {title}")
         print("### Configuration")
-        print("* Check: `{}`".format(argument))
-        print("* Severity: `{}`".format(impact))
+        print(f"* Check: `{argument}`")
+        print(f"* Severity: `{impact}`")
         print("\n### Description")
         print(description)
         if exploit_scenario:
@@ -31,7 +33,7 @@ def output_wiki(detector_classes, filter_wiki):
         print(recommendation)
 
 
-def output_detectors(detector_classes):
+def output_detectors(detector_classes: List[Type[AbstractCheck]]) -> None:
     detectors_list = []
     for detector in detector_classes:
         argument = detector.ARGUMENT
@@ -48,7 +50,7 @@ def output_detectors(detector_classes):
     for (argument, help_info, impact, proxy, v2) in detectors_list:
         table.add_row(
             [
-                idx,
+                str(idx),
                 argument,
                 help_info,
                 classification_txt[impact],
@@ -60,11 +62,11 @@ def output_detectors(detector_classes):
     print(table)
 
 
-def output_to_markdown(detector_classes, _filter_wiki):
-    def extract_help(cls):
+def output_to_markdown(detector_classes: List[Type[AbstractCheck]], _filter_wiki: str) -> None:
+    def extract_help(cls: AbstractCheck) -> str:
         if cls.WIKI == "":
             return cls.HELP
-        return "[{}]({})".format(cls.HELP, cls.WIKI)
+        return f"[{cls.HELP}]({cls.WIKI})"
 
     detectors_list = []
     for detector in detector_classes:
@@ -80,19 +82,14 @@ def output_to_markdown(detector_classes, _filter_wiki):
     idx = 1
     for (argument, help_info, impact, proxy, v2) in detectors_list:
         print(
-            "{} | `{}` | {} | {} | {} | {}".format(
-                idx,
-                argument,
-                help_info,
-                classification_txt[impact],
-                "X" if proxy else "",
-                "X" if v2 else "",
-            )
+            f"{idx} | `{argument}` | {help_info} | {classification_txt[impact]} | {'X' if proxy else ''} | {'X' if v2 else ''}"
         )
         idx = idx + 1
 
 
-def output_detectors_json(detector_classes):
+def output_detectors_json(
+    detector_classes: List[Type[AbstractCheck]],
+) -> List[Dict[str, Union[str, int]]]:
     detectors_list = []
     for detector in detector_classes:
         argument = detector.ARGUMENT
@@ -117,7 +114,7 @@ def output_detectors_json(detector_classes):
     # Sort by impact, confidence, and name
     detectors_list = sorted(detectors_list, key=lambda element: (element[2], element[0]))
     idx = 1
-    table = []
+    table: List[Dict[str, Union[str, int]]] = []
     for (
         argument,
         help_info,

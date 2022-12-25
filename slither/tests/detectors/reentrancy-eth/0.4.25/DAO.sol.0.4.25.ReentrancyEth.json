@@ -8,7 +8,6 @@
                     "source_mapping": {
                         "start": 32955,
                         "length": 2978,
-                        "filename_used": "/GENERIC_PATH",
                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                         "filename_absolute": "/GENERIC_PATH",
                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -110,7 +109,6 @@
                             "source_mapping": {
                                 "start": 28296,
                                 "length": 17108,
-                                "filename_used": "/GENERIC_PATH",
                                 "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                 "filename_absolute": "/GENERIC_PATH",
                                 "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -660,7 +658,6 @@
                     "source_mapping": {
                         "start": 33981,
                         "length": 32,
-                        "filename_used": "/GENERIC_PATH",
                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                         "filename_absolute": "/GENERIC_PATH",
                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -678,7 +675,6 @@
                             "source_mapping": {
                                 "start": 32955,
                                 "length": 2978,
-                                "filename_used": "/GENERIC_PATH",
                                 "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                 "filename_absolute": "/GENERIC_PATH",
                                 "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -780,7 +776,6 @@
                                     "source_mapping": {
                                         "start": 28296,
                                         "length": 17108,
-                                        "filename_used": "/GENERIC_PATH",
                                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                         "filename_absolute": "/GENERIC_PATH",
                                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -1335,7 +1330,6 @@
                     "source_mapping": {
                         "start": 43091,
                         "length": 289,
-                        "filename_used": "/GENERIC_PATH",
                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                         "filename_absolute": "/GENERIC_PATH",
                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -1357,7 +1351,6 @@
                             "source_mapping": {
                                 "start": 42994,
                                 "length": 457,
-                                "filename_used": "/GENERIC_PATH",
                                 "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                 "filename_absolute": "/GENERIC_PATH",
                                 "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -1384,7 +1377,6 @@
                                     "source_mapping": {
                                         "start": 28296,
                                         "length": 17108,
-                                        "filename_used": "/GENERIC_PATH",
                                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                         "filename_absolute": "/GENERIC_PATH",
                                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -1939,7 +1931,6 @@
                     "source_mapping": {
                         "start": 35109,
                         "length": 51,
-                        "filename_used": "/GENERIC_PATH",
                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                         "filename_absolute": "/GENERIC_PATH",
                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -1957,7 +1948,6 @@
                             "source_mapping": {
                                 "start": 32955,
                                 "length": 2978,
-                                "filename_used": "/GENERIC_PATH",
                                 "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                 "filename_absolute": "/GENERIC_PATH",
                                 "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -2059,7 +2049,6 @@
                                     "source_mapping": {
                                         "start": 28296,
                                         "length": 17108,
-                                        "filename_used": "/GENERIC_PATH",
                                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                         "filename_absolute": "/GENERIC_PATH",
                                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -2614,7 +2603,6 @@
                     "source_mapping": {
                         "start": 34718,
                         "length": 34,
-                        "filename_used": "/GENERIC_PATH",
                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                         "filename_absolute": "/GENERIC_PATH",
                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -2632,7 +2620,6 @@
                             "source_mapping": {
                                 "start": 32955,
                                 "length": 2978,
-                                "filename_used": "/GENERIC_PATH",
                                 "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                 "filename_absolute": "/GENERIC_PATH",
                                 "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -2734,7 +2721,6 @@
                                     "source_mapping": {
                                         "start": 28296,
                                         "length": 17108,
-                                        "filename_used": "/GENERIC_PATH",
                                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                         "filename_absolute": "/GENERIC_PATH",
                                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -3289,7 +3275,6 @@
                     "source_mapping": {
                         "start": 35109,
                         "length": 51,
-                        "filename_used": "/GENERIC_PATH",
                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                         "filename_absolute": "/GENERIC_PATH",
                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -3307,7 +3292,6 @@
                             "source_mapping": {
                                 "start": 32955,
                                 "length": 2978,
-                                "filename_used": "/GENERIC_PATH",
                                 "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                 "filename_absolute": "/GENERIC_PATH",
                                 "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -3409,7 +3393,6 @@
                                     "source_mapping": {
                                         "start": 28296,
                                         "length": 17108,
-                                        "filename_used": "/GENERIC_PATH",
                                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                         "filename_absolute": "/GENERIC_PATH",
                                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -3964,7 +3947,6 @@
                     "source_mapping": {
                         "start": 35198,
                         "length": 23,
-                        "filename_used": "/GENERIC_PATH",
                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                         "filename_absolute": "/GENERIC_PATH",
                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -3982,7 +3964,6 @@
                             "source_mapping": {
                                 "start": 32955,
                                 "length": 2978,
-                                "filename_used": "/GENERIC_PATH",
                                 "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                 "filename_absolute": "/GENERIC_PATH",
                                 "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -4084,7 +4065,6 @@
                                     "source_mapping": {
                                         "start": 28296,
                                         "length": 17108,
-                                        "filename_used": "/GENERIC_PATH",
                                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                         "filename_absolute": "/GENERIC_PATH",
                                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -4640,7 +4620,6 @@
                     "source_mapping": {
                         "start": 35817,
                         "length": 26,
-                        "filename_used": "/GENERIC_PATH",
                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                         "filename_absolute": "/GENERIC_PATH",
                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -4658,7 +4637,6 @@
                             "source_mapping": {
                                 "start": 32955,
                                 "length": 2978,
-                                "filename_used": "/GENERIC_PATH",
                                 "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                 "filename_absolute": "/GENERIC_PATH",
                                 "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -4760,7 +4738,6 @@
                                     "source_mapping": {
                                         "start": 28296,
                                         "length": 17108,
-                                        "filename_used": "/GENERIC_PATH",
                                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                         "filename_absolute": "/GENERIC_PATH",
                                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -5316,7 +5293,6 @@
                     "source_mapping": {
                         "start": 36121,
                         "length": 14,
-                        "filename_used": "/GENERIC_PATH",
                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                         "filename_absolute": "/GENERIC_PATH",
                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -5334,7 +5310,6 @@
                             "source_mapping": {
                                 "start": 35940,
                                 "length": 202,
-                                "filename_used": "/GENERIC_PATH",
                                 "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                 "filename_absolute": "/GENERIC_PATH",
                                 "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -5357,7 +5332,6 @@
                                     "source_mapping": {
                                         "start": 28296,
                                         "length": 17108,
-                                        "filename_used": "/GENERIC_PATH",
                                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                         "filename_absolute": "/GENERIC_PATH",
                                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -5913,7 +5887,6 @@
                     "source_mapping": {
                         "start": 35698,
                         "length": 38,
-                        "filename_used": "/GENERIC_PATH",
                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                         "filename_absolute": "/GENERIC_PATH",
                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -5931,7 +5904,6 @@
                             "source_mapping": {
                                 "start": 32955,
                                 "length": 2978,
-                                "filename_used": "/GENERIC_PATH",
                                 "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                 "filename_absolute": "/GENERIC_PATH",
                                 "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -6033,7 +6005,6 @@
                                     "source_mapping": {
                                         "start": 28296,
                                         "length": 17108,
-                                        "filename_used": "/GENERIC_PATH",
                                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                         "filename_absolute": "/GENERIC_PATH",
                                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -6589,7 +6560,6 @@
                     "source_mapping": {
                         "start": 35817,
                         "length": 26,
-                        "filename_used": "/GENERIC_PATH",
                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                         "filename_absolute": "/GENERIC_PATH",
                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -6607,7 +6577,6 @@
                             "source_mapping": {
                                 "start": 32955,
                                 "length": 2978,
-                                "filename_used": "/GENERIC_PATH",
                                 "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                 "filename_absolute": "/GENERIC_PATH",
                                 "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -6709,7 +6678,6 @@
                                     "source_mapping": {
                                         "start": 28296,
                                         "length": 17108,
-                                        "filename_used": "/GENERIC_PATH",
                                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                         "filename_absolute": "/GENERIC_PATH",
                                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -7265,7 +7233,6 @@
                     "source_mapping": {
                         "start": 36069,
                         "length": 42,
-                        "filename_used": "/GENERIC_PATH",
                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                         "filename_absolute": "/GENERIC_PATH",
                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -7283,7 +7250,6 @@
                             "source_mapping": {
                                 "start": 35940,
                                 "length": 202,
-                                "filename_used": "/GENERIC_PATH",
                                 "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                 "filename_absolute": "/GENERIC_PATH",
                                 "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -7306,7 +7272,6 @@
                                     "source_mapping": {
                                         "start": 28296,
                                         "length": 17108,
-                                        "filename_used": "/GENERIC_PATH",
                                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                         "filename_absolute": "/GENERIC_PATH",
                                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -7862,7 +7827,6 @@
                     "source_mapping": {
                         "start": 35754,
                         "length": 28,
-                        "filename_used": "/GENERIC_PATH",
                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                         "filename_absolute": "/GENERIC_PATH",
                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -7880,7 +7844,6 @@
                             "source_mapping": {
                                 "start": 32955,
                                 "length": 2978,
-                                "filename_used": "/GENERIC_PATH",
                                 "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                 "filename_absolute": "/GENERIC_PATH",
                                 "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -7982,7 +7945,6 @@
                                     "source_mapping": {
                                         "start": 28296,
                                         "length": 17108,
-                                        "filename_used": "/GENERIC_PATH",
                                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                         "filename_absolute": "/GENERIC_PATH",
                                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -8533,10 +8495,10 @@
                     }
                 }
             ],
-            "description": "Reentrancy in DAO.executeProposal(uint256,bytes) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#853-937):\n\tExternal calls:\n\t- ! isRecipientAllowed(p.recipient) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#881)\n\t\t- allowedRecipients[_recipient] || (_recipient == address(extraBalance) && totalRewardToken > extraBalance.accumulatedInput()) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#1159-1163)\n\t- ! p.recipient.call.value(p.amount)(_transactionData) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#915)\n\tExternal calls sending eth:\n\t- ! p.creator.send(p.proposalDeposit) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#904)\n\t- ! p.recipient.call.value(p.amount)(_transactionData) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#915)\n\tState variables written after the call(s):\n\t- p.proposalPassed = true (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#918)\n\t- closeProposal(_proposalID) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#933)\n\t\t- p.open = false (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#944)\n\t- rewardToken[address(this)] += p.amount (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#928)\n\t- closeProposal(_proposalID) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#933)\n\t\t- sumOfProposalDeposits -= p.proposalDeposit (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#943)\n\t- totalRewardToken += p.amount (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#929)\n",
-            "markdown": "Reentrancy in [DAO.executeProposal(uint256,bytes)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L853-L937):\n\tExternal calls:\n\t- [! isRecipientAllowed(p.recipient)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L881)\n\t\t- [allowedRecipients[_recipient] || (_recipient == address(extraBalance) && totalRewardToken > extraBalance.accumulatedInput())](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L1159-L1163)\n\t- [! p.recipient.call.value(p.amount)(_transactionData)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L915)\n\tExternal calls sending eth:\n\t- [! p.creator.send(p.proposalDeposit)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L904)\n\t- [! p.recipient.call.value(p.amount)(_transactionData)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L915)\n\tState variables written after the call(s):\n\t- [p.proposalPassed = true](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L918)\n\t- [closeProposal(_proposalID)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L933)\n\t\t- [p.open = false](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L944)\n\t- [rewardToken[address(this)] += p.amount](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L928)\n\t- [closeProposal(_proposalID)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L933)\n\t\t- [sumOfProposalDeposits -= p.proposalDeposit](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L943)\n\t- [totalRewardToken += p.amount](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L929)\n",
+            "description": "Reentrancy in DAO.executeProposal(uint256,bytes) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#853-937):\n\tExternal calls:\n\t- ! isRecipientAllowed(p.recipient) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#881)\n\t\t- allowedRecipients[_recipient] || (_recipient == address(extraBalance) && totalRewardToken > extraBalance.accumulatedInput()) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#1159-1163)\n\t- ! p.recipient.call.value(p.amount)(_transactionData) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#915)\n\tExternal calls sending eth:\n\t- ! p.creator.send(p.proposalDeposit) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#904)\n\t- ! p.recipient.call.value(p.amount)(_transactionData) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#915)\n\tState variables written after the call(s):\n\t- p.proposalPassed = true (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#918)\n\tDAOInterface.proposals (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#394) can be used in cross function reentrancies:\n\t- DAO.DAO(address,DAO_Creator,uint256,uint256,uint256,address) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#702-726)\n\t- DAO.checkProposalCode(uint256,address,uint256,bytes) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#809-817)\n\t- DAO.closeProposal(uint256) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#940-945)\n\t- DAO.executeProposal(uint256,bytes) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#853-937)\n\t- DAO.getNewDAOAddress(uint256) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#1204-1206)\n\t- DAO.isBlocked(address) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#1208-1218)\n\t- DAO.newProposal(address,uint256,string,bytes,uint256,bool) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#741-806)\n\t- DAO.numberOfProposals() (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#1199-1202)\n\t- DAOInterface.proposals (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#394)\n\t- DAO.splitDAO(uint256,address) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#947-1020)\n\t- DAO.vote(uint256,bool) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#820-850)\n\t- closeProposal(_proposalID) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#933)\n\t\t- p.open = false (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#944)\n\tDAOInterface.proposals (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#394) can be used in cross function reentrancies:\n\t- DAO.DAO(address,DAO_Creator,uint256,uint256,uint256,address) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#702-726)\n\t- DAO.checkProposalCode(uint256,address,uint256,bytes) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#809-817)\n\t- DAO.closeProposal(uint256) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#940-945)\n\t- DAO.executeProposal(uint256,bytes) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#853-937)\n\t- DAO.getNewDAOAddress(uint256) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#1204-1206)\n\t- DAO.isBlocked(address) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#1208-1218)\n\t- DAO.newProposal(address,uint256,string,bytes,uint256,bool) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#741-806)\n\t- DAO.numberOfProposals() (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#1199-1202)\n\t- DAOInterface.proposals (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#394)\n\t- DAO.splitDAO(uint256,address) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#947-1020)\n\t- DAO.vote(uint256,bool) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#820-850)\n\t- rewardToken[address(this)] += p.amount (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#928)\n\tDAOInterface.rewardToken (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#410) can be used in cross function reentrancies:\n\t- DAO.changeProposalDeposit(uint256) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#1139-1146)\n\t- DAO.executeProposal(uint256,bytes) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#853-937)\n\t- DAO.minQuorum(uint256) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#1174-1178)\n\t- DAO.newContract(address) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#1022-1034)\n\t- DAO.retrieveDAOReward(bool) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#1037-1057)\n\t- DAOInterface.rewardToken (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#410)\n\t- DAO.splitDAO(uint256,address) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#947-1020)\n\t- closeProposal(_proposalID) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#933)\n\t\t- sumOfProposalDeposits -= p.proposalDeposit (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#943)\n\tDAOInterface.sumOfProposalDeposits (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#436) can be used in cross function reentrancies:\n\t- DAO.actualBalance() (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#1169-1171)\n\t- DAO.closeProposal(uint256) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#940-945)\n\t- DAO.newProposal(address,uint256,string,bytes,uint256,bool) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#741-806)\n\t- DAO.splitDAO(uint256,address) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#947-1020)\n\t- totalRewardToken += p.amount (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#929)\n\tDAOInterface.totalRewardToken (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#412) can be used in cross function reentrancies:\n\t- DAO.executeProposal(uint256,bytes) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#853-937)\n\t- DAO.isRecipientAllowed(address) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#1158-1167)\n\t- DAO.retrieveDAOReward(bool) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#1037-1057)\n\t- DAOInterface.totalRewardToken (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#412)\n",
+            "markdown": "Reentrancy in [DAO.executeProposal(uint256,bytes)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L853-L937):\n\tExternal calls:\n\t- [! isRecipientAllowed(p.recipient)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L881)\n\t\t- [allowedRecipients[_recipient] || (_recipient == address(extraBalance) && totalRewardToken > extraBalance.accumulatedInput())](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L1159-L1163)\n\t- [! p.recipient.call.value(p.amount)(_transactionData)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L915)\n\tExternal calls sending eth:\n\t- [! p.creator.send(p.proposalDeposit)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L904)\n\t- [! p.recipient.call.value(p.amount)(_transactionData)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L915)\n\tState variables written after the call(s):\n\t- [p.proposalPassed = true](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L918)\n\t[DAOInterface.proposals](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L394) can be used in cross function reentrancies:\n\t- [DAO.DAO(address,DAO_Creator,uint256,uint256,uint256,address)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L702-L726)\n\t- [DAO.checkProposalCode(uint256,address,uint256,bytes)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L809-L817)\n\t- [DAO.closeProposal(uint256)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L940-L945)\n\t- [DAO.executeProposal(uint256,bytes)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L853-L937)\n\t- [DAO.getNewDAOAddress(uint256)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L1204-L1206)\n\t- [DAO.isBlocked(address)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L1208-L1218)\n\t- [DAO.newProposal(address,uint256,string,bytes,uint256,bool)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L741-L806)\n\t- [DAO.numberOfProposals()](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L1199-L1202)\n\t- [DAOInterface.proposals](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L394)\n\t- [DAO.splitDAO(uint256,address)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L947-L1020)\n\t- [DAO.vote(uint256,bool)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L820-L850)\n\t- [closeProposal(_proposalID)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L933)\n\t\t- [p.open = false](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L944)\n\t[DAOInterface.proposals](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L394) can be used in cross function reentrancies:\n\t- [DAO.DAO(address,DAO_Creator,uint256,uint256,uint256,address)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L702-L726)\n\t- [DAO.checkProposalCode(uint256,address,uint256,bytes)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L809-L817)\n\t- [DAO.closeProposal(uint256)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L940-L945)\n\t- [DAO.executeProposal(uint256,bytes)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L853-L937)\n\t- [DAO.getNewDAOAddress(uint256)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L1204-L1206)\n\t- [DAO.isBlocked(address)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L1208-L1218)\n\t- [DAO.newProposal(address,uint256,string,bytes,uint256,bool)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L741-L806)\n\t- [DAO.numberOfProposals()](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L1199-L1202)\n\t- [DAOInterface.proposals](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L394)\n\t- [DAO.splitDAO(uint256,address)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L947-L1020)\n\t- [DAO.vote(uint256,bool)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L820-L850)\n\t- [rewardToken[address(this)] += p.amount](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L928)\n\t[DAOInterface.rewardToken](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L410) can be used in cross function reentrancies:\n\t- [DAO.changeProposalDeposit(uint256)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L1139-L1146)\n\t- [DAO.executeProposal(uint256,bytes)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L853-L937)\n\t- [DAO.minQuorum(uint256)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L1174-L1178)\n\t- [DAO.newContract(address)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L1022-L1034)\n\t- [DAO.retrieveDAOReward(bool)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L1037-L1057)\n\t- [DAOInterface.rewardToken](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L410)\n\t- [DAO.splitDAO(uint256,address)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L947-L1020)\n\t- [closeProposal(_proposalID)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L933)\n\t\t- [sumOfProposalDeposits -= p.proposalDeposit](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L943)\n\t[DAOInterface.sumOfProposalDeposits](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L436) can be used in cross function reentrancies:\n\t- [DAO.actualBalance()](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L1169-L1171)\n\t- [DAO.closeProposal(uint256)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L940-L945)\n\t- [DAO.newProposal(address,uint256,string,bytes,uint256,bool)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L741-L806)\n\t- [DAO.splitDAO(uint256,address)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L947-L1020)\n\t- [totalRewardToken += p.amount](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L929)\n\t[DAOInterface.totalRewardToken](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L412) can be used in cross function reentrancies:\n\t- [DAO.executeProposal(uint256,bytes)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L853-L937)\n\t- [DAO.isRecipientAllowed(address)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L1158-L1167)\n\t- [DAO.retrieveDAOReward(bool)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L1037-L1057)\n\t- [DAOInterface.totalRewardToken](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L412)\n",
             "first_markdown_element": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L853-L937",
-            "id": "da2955efdedec834e2cbc56b913933ba273e4a4da5d9c5c6be9ff59c9249b84c",
+            "id": "b0ba06b4d03ea41bf0a200039964e2095441dddc3ffa19c56a40182a4cba834a",
             "check": "reentrancy-eth",
             "impact": "High",
             "confidence": "Medium"
@@ -8549,7 +8511,6 @@
                     "source_mapping": {
                         "start": 11531,
                         "length": 635,
-                        "filename_used": "/GENERIC_PATH",
                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                         "filename_absolute": "/GENERIC_PATH",
                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -8581,7 +8542,6 @@
                             "source_mapping": {
                                 "start": 10437,
                                 "length": 2342,
-                                "filename_used": "/GENERIC_PATH",
                                 "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                 "filename_absolute": "/GENERIC_PATH",
                                 "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -8663,7 +8623,6 @@
                     "source_mapping": {
                         "start": 11704,
                         "length": 55,
-                        "filename_used": "/GENERIC_PATH",
                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                         "filename_absolute": "/GENERIC_PATH",
                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -8681,7 +8640,6 @@
                             "source_mapping": {
                                 "start": 11531,
                                 "length": 635,
-                                "filename_used": "/GENERIC_PATH",
                                 "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                 "filename_absolute": "/GENERIC_PATH",
                                 "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -8713,7 +8671,6 @@
                                     "source_mapping": {
                                         "start": 10437,
                                         "length": 2342,
-                                        "filename_used": "/GENERIC_PATH",
                                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                         "filename_absolute": "/GENERIC_PATH",
                                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -8800,7 +8757,6 @@
                     "source_mapping": {
                         "start": 11777,
                         "length": 67,
-                        "filename_used": "/GENERIC_PATH",
                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                         "filename_absolute": "/GENERIC_PATH",
                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -8818,7 +8774,6 @@
                             "source_mapping": {
                                 "start": 11531,
                                 "length": 635,
-                                "filename_used": "/GENERIC_PATH",
                                 "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                 "filename_absolute": "/GENERIC_PATH",
                                 "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -8850,7 +8805,6 @@
                                     "source_mapping": {
                                         "start": 10437,
                                         "length": 2342,
-                                        "filename_used": "/GENERIC_PATH",
                                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                         "filename_absolute": "/GENERIC_PATH",
                                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -8937,7 +8891,6 @@
                     "source_mapping": {
                         "start": 11893,
                         "length": 45,
-                        "filename_used": "/GENERIC_PATH",
                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                         "filename_absolute": "/GENERIC_PATH",
                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -8955,7 +8908,6 @@
                             "source_mapping": {
                                 "start": 11531,
                                 "length": 635,
-                                "filename_used": "/GENERIC_PATH",
                                 "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                 "filename_absolute": "/GENERIC_PATH",
                                 "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -8987,7 +8939,6 @@
                                     "source_mapping": {
                                         "start": 10437,
                                         "length": 2342,
-                                        "filename_used": "/GENERIC_PATH",
                                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                         "filename_absolute": "/GENERIC_PATH",
                                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -9074,7 +9025,6 @@
                     "source_mapping": {
                         "start": 11893,
                         "length": 45,
-                        "filename_used": "/GENERIC_PATH",
                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                         "filename_absolute": "/GENERIC_PATH",
                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -9092,7 +9042,6 @@
                             "source_mapping": {
                                 "start": 11531,
                                 "length": 635,
-                                "filename_used": "/GENERIC_PATH",
                                 "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                 "filename_absolute": "/GENERIC_PATH",
                                 "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -9124,7 +9073,6 @@
                                     "source_mapping": {
                                         "start": 10437,
                                         "length": 2342,
-                                        "filename_used": "/GENERIC_PATH",
                                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                         "filename_absolute": "/GENERIC_PATH",
                                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -9211,7 +9159,6 @@
                     "source_mapping": {
                         "start": 12111,
                         "length": 24,
-                        "filename_used": "/GENERIC_PATH",
                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                         "filename_absolute": "/GENERIC_PATH",
                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -9229,7 +9176,6 @@
                             "source_mapping": {
                                 "start": 11531,
                                 "length": 635,
-                                "filename_used": "/GENERIC_PATH",
                                 "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                 "filename_absolute": "/GENERIC_PATH",
                                 "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -9261,7 +9207,6 @@
                                     "source_mapping": {
                                         "start": 10437,
                                         "length": 2342,
-                                        "filename_used": "/GENERIC_PATH",
                                         "filename_relative": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
                                         "filename_absolute": "/GENERIC_PATH",
                                         "filename_short": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol",
@@ -9344,10 +9289,10 @@
                     }
                 }
             ],
-            "description": "Reentrancy in TokenCreation.refund() (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#318-332):\n\tExternal calls:\n\t- extraBalance.balance >= extraBalance.accumulatedInput() (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#321)\n\t- extraBalance.payOut(address(this),extraBalance.accumulatedInput()) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#322)\n\t- msg.sender.call.value(weiGiven[msg.sender])() (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#325)\n\tExternal calls sending eth:\n\t- msg.sender.call.value(weiGiven[msg.sender])() (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#325)\n\tState variables written after the call(s):\n\t- weiGiven[msg.sender] = 0 (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#329)\n",
-            "markdown": "Reentrancy in [TokenCreation.refund()](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L318-L332):\n\tExternal calls:\n\t- [extraBalance.balance >= extraBalance.accumulatedInput()](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L321)\n\t- [extraBalance.payOut(address(this),extraBalance.accumulatedInput())](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L322)\n\t- [msg.sender.call.value(weiGiven[msg.sender])()](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L325)\n\tExternal calls sending eth:\n\t- [msg.sender.call.value(weiGiven[msg.sender])()](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L325)\n\tState variables written after the call(s):\n\t- [weiGiven[msg.sender] = 0](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L329)\n",
+            "description": "Reentrancy in TokenCreation.refund() (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#318-332):\n\tExternal calls:\n\t- extraBalance.balance >= extraBalance.accumulatedInput() (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#321)\n\t- extraBalance.payOut(address(this),extraBalance.accumulatedInput()) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#322)\n\t- msg.sender.call.value(weiGiven[msg.sender])() (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#325)\n\tExternal calls sending eth:\n\t- msg.sender.call.value(weiGiven[msg.sender])() (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#325)\n\tState variables written after the call(s):\n\t- weiGiven[msg.sender] = 0 (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#329)\n\tTokenCreationInterface.weiGiven (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#251) can be used in cross function reentrancies:\n\t- TokenCreation.createTokenProxy(address) (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#299-316)\n\t- TokenCreation.refund() (tests/detectors/reentrancy-eth/0.4.25/DAO.sol#318-332)\n",
+            "markdown": "Reentrancy in [TokenCreation.refund()](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L318-L332):\n\tExternal calls:\n\t- [extraBalance.balance >= extraBalance.accumulatedInput()](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L321)\n\t- [extraBalance.payOut(address(this),extraBalance.accumulatedInput())](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L322)\n\t- [msg.sender.call.value(weiGiven[msg.sender])()](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L325)\n\tExternal calls sending eth:\n\t- [msg.sender.call.value(weiGiven[msg.sender])()](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L325)\n\tState variables written after the call(s):\n\t- [weiGiven[msg.sender] = 0](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L329)\n\t[TokenCreationInterface.weiGiven](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L251) can be used in cross function reentrancies:\n\t- [TokenCreation.createTokenProxy(address)](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L299-L316)\n\t- [TokenCreation.refund()](tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L318-L332)\n",
             "first_markdown_element": "tests/detectors/reentrancy-eth/0.4.25/DAO.sol#L318-L332",
-            "id": "c464e3c8a788029668f77cdff5d7e6a2af53a5ec0f79e21392a5910bfb9dcbe5",
+            "id": "ec60469e1cc5d8cd352a86998673bfb43580d5119e501f9a3e58e3b55befb0a9",
             "check": "reentrancy-eth",
             "impact": "High",
             "confidence": "Medium"

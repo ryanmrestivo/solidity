@@ -1,4 +1,3 @@
-from decimal import Decimal
 from functools import total_ordering
 
 from slither.core.solidity_types.elementary_type import ElementaryType, Int, Uint
@@ -33,7 +32,7 @@ class Constant(SlithIRVariable):
         else:
             if val.isdigit():
                 self._type = ElementaryType("uint256")
-                self._val = int(Decimal(val))
+                self._val = convert_string_to_int(val)
             else:
                 self._type = ElementaryType("string")
                 self._val = val
@@ -74,4 +73,7 @@ class Constant(SlithIRVariable):
         return self.value < other
 
     def __repr__(self):
-        return "%s" % (str(self.value))
+        return f"{str(self.value)}"
+
+    def __hash__(self) -> int:
+        return self._val.__hash__()

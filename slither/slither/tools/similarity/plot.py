@@ -1,3 +1,4 @@
+import argparse
 import logging
 import random
 import sys
@@ -23,7 +24,7 @@ except ImportError:
 logger = logging.getLogger("Slither-simil")
 
 
-def plot(args):  # pylint: disable=too-many-locals
+def plot(args: argparse.Namespace) -> None:  # pylint: disable=too-many-locals
 
     if decomposition is None or plt is None:
         logger.error(
@@ -50,8 +51,8 @@ def plot(args):  # pylint: disable=too-many-locals
         logger.info("Loading data..")
         cache = load_and_encode(infile, **vars(args))
 
-        data = list()
-        fs = list()
+        data = []
+        fs = []
 
         logger.info("Procesing data..")
         for (f, c, n), y in cache.items():
@@ -80,6 +81,6 @@ def plot(args):  # pylint: disable=too-many-locals
         plt.savefig("plot.png", bbox_inches="tight")
 
     except Exception:  # pylint: disable=broad-except
-        logger.error("Error in %s" % args.filename)
+        logger.error(f"Error in {args.filename}")
         logger.error(traceback.format_exc())
         sys.exit(-1)

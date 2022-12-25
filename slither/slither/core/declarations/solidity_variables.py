@@ -1,8 +1,9 @@
 # https://solidity.readthedocs.io/en/v0.4.24/units-and-global-variables.html
 from typing import List, Dict, Union, TYPE_CHECKING
 
-from slither.core.context.context import Context
+from slither.core.declarations.custom_error import CustomError
 from slither.core.solidity_types import ElementaryType, TypeInformation
+from slither.core.source_mapping.source_mapping import SourceMapping
 from slither.exceptions import SlitherException
 
 if TYPE_CHECKING:
@@ -19,6 +20,7 @@ SOLIDITY_VARIABLES = {
 }
 
 SOLIDITY_VARIABLES_COMPOSED = {
+    "block.basefee": "uint",
     "block.coinbase": "address",
     "block.difficulty": "uint256",
     "block.gaslimit": "uint256",
@@ -42,6 +44,7 @@ SOLIDITY_FUNCTIONS: Dict[str, List[str]] = {
     "require(bool,string)": [],
     "revert()": [],
     "revert(string)": [],
+    "revert ": [],
     "addmod(uint256,uint256,uint256)": ["uint256"],
     "mulmod(uint256,uint256,uint256)": ["uint256"],
     "keccak256()": ["bytes32"],
@@ -67,10 +70,17 @@ SOLIDITY_FUNCTIONS: Dict[str, List[str]] = {
     "abi.encodePacked()": ["bytes"],
     "abi.encodeWithSelector()": ["bytes"],
     "abi.encodeWithSignature()": ["bytes"],
+    "abi.encodeCall()": ["bytes"],
+    "bytes.concat()": ["bytes"],
+    "string.concat()": ["string"],
     # abi.decode returns an a list arbitrary types
     "abi.decode()": [],
     "type(address)": [],
     "type()": [],  # 0.6.8 changed type(address) to type()
+    # The following are conversion from address.something
+    "balance(address)": ["uint256"],
+    "code(address)": ["bytes"],
+    "codehash(address)": ["bytes32"],
 }
 
 
@@ -84,10 +94,10 @@ def solidity_function_signature(name):
     Returns:
         str
     """
-    return name + " returns({})".format(",".join(SOLIDITY_FUNCTIONS[name]))
+    return name + f" returns({','.join(SOLIDITY_FUNCTIONS[name])})"
 
 
-class SolidityVariable(Context):
+class SolidityVariable(SourceMapping):
     def __init__(self, name: str):
         super().__init__()
         self._check_name(name)
@@ -95,7 +105,7 @@ class SolidityVariable(Context):
 
     # dev function, will be removed once the code is stable
     def _check_name(self, name: str):  # pylint: disable=no-self-use
-        assert name in SOLIDITY_VARIABLES or name.endswith("_slot") or name.endswith("_offset")
+        assert name in SOLIDITY_VARIABLES or name.endswith(("_slot", "_offset"))
 
     @property
     def state_variable(self):
@@ -146,13 +156,14 @@ class SolidityVariableComposed(SolidityVariable):
         return hash(self.name)
 
 
-class SolidityFunction:
+class SolidityFunction(SourceMapping):
     # Non standard handling of type(address). This function returns an undefined object
     # The type is dynamic
     # https://solidity.readthedocs.io/en/latest/units-and-global-variables.html#type-information
     # As a result, we set return_type during the Ir conversion
 
     def __init__(self, name: str):
+        super().__init__()
         assert name in SOLIDITY_FUNCTIONS
         self._name = name
         # Can be TypeInformation if type(address) is used
@@ -184,3 +195,20 @@ class SolidityFunction:
 
     def __hash__(self):
         return hash(self.name)
+
+
+class SolidityCustomRevert(SolidityFunction):
+    def __init__(self, custom_error: CustomError):  # pylint: disable=super-init-not-called
+        self._name = "revert " + custom_error.solidity_signature
+        self._custom_error = custom_error
+        self._return_type: List[Union[TypeInformation, ElementaryType]] = []
+
+    def __eq__(self, other):
+        return (
+            self.__class__ == other.__class__
+            and self.name == other.name
+            and self._custom_error == other._custom_error
+        )
+
+    def __hash__(self):
+        return hash(hash(self.name) + hash(self._custom_error))
