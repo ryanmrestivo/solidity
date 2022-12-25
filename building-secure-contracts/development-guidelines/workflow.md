@@ -24,7 +24,6 @@ Document critical security properties and use automated test generators to evalu
 - [ ] Learn to [document security properties for your code](/program-analysis/). It's tough as first, but it's the single most important activity for achieving a good outcome. It's also a prerequisite for using any of the advanced techniques in this tutorial.
 - [ ] Define security properties in Solidity, for use with [Echidna](https://github.com/crytic/echidna) and [Manticore](https://manticore.readthedocs.io/en/latest/verifier.html). Focus on your state machine, access controls, arithmetic operations, external interactions, and standards conformance.
 - [ ] Define security properties with [Slither's Python API](/program-analysis/slither). Focus on inheritance, variable dependencies, access controls, and other structural issues.
-- [ ] Run your property tests on every commit with [Crytic](https://crytic.io). Crytic can consume and evaluate security property tests so everyone on your team can easily see that they pass on GitHub. Failing tests can block commits.
 
 Finally, be mindful of issues that automated tools cannot easily find:
 
@@ -35,7 +34,7 @@ Finally, be mindful of issues that automated tools cannot easily find:
 
 ## Ask for help
 
-[Ethereum office hours](https://calendly.com/dan-trailofbits/office-hours) run every Tuesday afternoon. These 1-hour, 1-on-1 sessions are an opportunity to ask us any questions you have about security, troubleshoot using our tools, and get feedback from experts about your current approach. We will help you work through this guide.
+[Office Hours](https://calendly.com/trail-of-bits-sales/trail-of-bits-office-hours) run every Tuesday afternoon. These 1-hour, 1-on-1 sessions are an opportunity to ask us any questions you have about security, troubleshoot using our tools, and get feedback from experts about your current approach. We will help you work through this guide.
 
 Join our Slack: [Empire Hacking](https://join.slack.com/t/empirehacking/shared_invite/zt-h97bbrj8-1jwuiU33nnzg67JcvIciUw). We're always available in the #crytic and #ethereum channels if you have any questions.
 

@@ -12,6 +12,8 @@ Once you feel you understand the material in this README, proceed to the exercis
 - [Exercise 1](./exercise1.md): Function override protection
 - [Exercise 2](./exercise2.md): Check for access controls
 
+Watch Slither's [code walkthrough](https://www.youtube.com/watch?v=EUl3UlYSluU) to learn about its code structure.
+
 ## Installation
 
 Slither requires Python >= 3.6. It can be installed through pip or using docker.
@@ -55,8 +57,6 @@ slither project_paths
 ```
 
 In addition to detectors, Slither has code review capabilities through its [printers](https://github.com/crytic/slither#printers) and [tools](https://github.com/crytic/slither#tools).
-
-Use [crytic.io](https://crytic.io) to get access to private detectors and GitHub integration.
 
 ## Static analysis
 
@@ -201,7 +201,7 @@ A `Slither` object has:
 
 - `contracts (list(Contract)`: list of contracts
 - `contracts_derived (list(Contract)`: list of contracts that are not inherited by another contract (subset of contracts)
-- `get_contract_from_name (str)`: Return a contract from its name
+- `get_contract_from_name (str)`: Return a list of contract matching the name
 
 A `Contract` object has:
 

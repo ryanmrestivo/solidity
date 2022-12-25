@@ -5,12 +5,12 @@
 - [Introduction](#introduction)
 - [Write an assertion](#write-an-assertion)
 - [Run Echidna](#run-echidna)
-- [When and how use assertions](#when-and-how-use-assertions)
+- [When and how to use assertions](#when-and-how-to-use-assertions)
 - [Summary: Assertion checking](#summary-assertion-checking)
 
 ## Introduction
 
-In this short tutorial, we will show you how to use Echidna to check assertions in smart contracts.
+In this short tutorial, we will show you how to use Echidna to check assertions in smart contracts. For this example, make sure you use Solidity 0.7.x or older. If you run them with Solidity 0.8.x, the test will never fail.
 
 ## Write an assertion
 
@@ -29,7 +29,7 @@ contract Incrementor {
 }
 ```
 
-We want to make sure that `tmp` is less or equal than `counter` after returning its difference. We could write an Echidna property, but we will need to store the `tmp` value somewhere. Instead, we could use an assertion like this one:
+We want to make sure that `tmp` is less than or equal to `counter` after returning its difference. We could write an Echidna property, but we will need to store the `tmp` value somewhere. Instead, we could use an assertion like this one (*[example/assert.sol](./example/assert.sol)*):
 
 ```solidity
 contract Incrementor {
@@ -63,16 +63,18 @@ contract Incrementor {
 
 ## Run Echidna
 
-To enable the assertion failure testing in Echidna, create an [Echidna configuration file](https://github.com/crytic/echidna/wiki/Config), `config.yaml`, with checkAsserts set to true:
+To enable the assertion failure testing in Echidna, you can use `--test-mode assertion` directly from the command line. 
+
+Otherwise, you can create an [Echidna configuration file](https://github.com/crytic/echidna/wiki/Config), `config.yaml`, with `testMode` set for assertion checking:
 
 ```yaml
-checkAsserts: true
+testMode: assertion
 ```
 
-When we run this contract in Echidna, we obtain the expected results:
+When we run this contract with Echidna, we obtain the expected results:
 
 ```
-$ echidna-test assert.sol --config config.yaml 
+$ echidna-test assert.sol --test-mode assertion
 Analyzing contract: assert.sol:Incrementor
 assertion in inc: failed!💥  
   Call sequence, shrinking (2596/5000):
@@ -85,9 +87,9 @@ Seed: 1806480648350826486
 
 As you can see, Echidna reports an assertion failure in the `inc` function. Adding more than one assertion per function is possible, however, Echidna cannot tell which assertion failed.
 
-## When and how use assertions
+## When and how to use assertions
 
-Assertions can be used as alternatives to explicit properties if the conditions to check are directly related to the correct use of some operation `f`. Adding assertions after some code will enforce that the check will happen immediately after it was executed: 
+Assertions can be used as alternatives to explicit properties if the conditions to check are directly related to the correct use of some operation `f`. Adding assertions after some code will enforce that the check happens immediately after it was executed: 
 
 ```solidity
 function f(..) public {
@@ -96,10 +98,9 @@ function f(..) public {
     assert (condition);
     ...
 }
-
 ```
 
-On the contrary, using an explicit Echidna property will randomly execute transactions and there is no easy way to enforce exactly when it will be checked. It is still possible to do this workaround:
+On the contrary, using an explicit boolean property will randomly execute transactions and there is no easy way to enforce exactly when it will be checked. It is still possible to do this workaround:
 
 ```solidity
 function echidna_assert_after_f() public returns (bool) {
@@ -114,6 +115,28 @@ However, there are some issues:
 * It is unclear which arguments should be used to call `f`
 * The property will fail if `f` reverts, 
 
+Assertions can help to overcome this possible issues. For instance, they can be easily detected when calling internal or public functions:
+
+```solidity
+function f(..) public {
+    // some complex code
+    ...
+    g(..) // this contains an assert
+    ...
+}
+```
+
+If `g` is external, then assertion failure can be **only detected in Solidity 0.8.x or later**.
+
+```solidity
+function f(..) public {
+    // some complex code
+    ...
+    contract.g(..) // this contains an assert
+    ...
+}
+```
+
 In general, we recommend following [John Regehr's advice](https://blog.regehr.org/archives/1091) on using assertions:
 
 * Do not force any side effects during the assertion checking. For instance: `assert(ChangeStateAndReturn() == 1)`
@@ -123,7 +146,7 @@ Finally, please **do not use** `require` instead of `assert`, since Echidna will
 
 ## Summary: Assertion Checking
 
-The following summarizes the run of Echidna on our example:
+The following summarizes the run of Echidna on our example (remember to use 0.7.x or older):
 
 ```solidity
 contract Incrementor {
@@ -139,7 +162,7 @@ contract Incrementor {
 ```
 
 ```bash
-$ echidna-test assert.sol --config config.yaml 
+$ echidna-test assert.sol --test-mode assertion
 Analyzing contract: assert.sol:Incrementor
 assertion in inc: failed!💥  
   Call sequence, shrinking (2596/5000):

@@ -10,8 +10,8 @@
 
 ## Introduction
 
-We will see how to fuzz a contract without providing the source code. 
-The technique can used to do differential fuzzing (i.e. compare multiple implementations) between a Solidity contract, and a Vyper contract, or without source code.
+We will see how to fuzz a contract without any provided source code. 
+The technique can also be used to perform differential fuzzing (i.e. compare multiple implementations) between a Solidity contract and a Vyper contract.
 
 Consider the following bytecode:
 ```
@@ -44,7 +44,7 @@ interface Target{
 contract TestBytecodeOnly{
     Target t;
 
-    constructor(){
+    constructor() public{
         address target_addr;
         // init bytecode
         bytes memory target_bytecode = hex"608060405234801561001057600080fd5b506103e86000803373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055506103e86001819055506101fa8061006e6000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c806318160ddd1461004657806370a0823114610064578063a9059cbb146100bc575b600080fd5b61004e61010a565b6040518082815260200191505060405180910390f35b6100a66004803603602081101561007a57600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190505050610110565b6040518082815260200191505060405180910390f35b610108600480360360408110156100d257600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff16906020019092919080359060200190929190505050610128565b005b60015481565b60006020528060005260406000206000915090505481565b806000803373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282540392505081905550806000808473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282540192505081905550505056fe";
@@ -68,20 +68,20 @@ contract TestBytecodeOnly{
 ```
 
 The proxy:
-- Deploy the bytecode in its constructor
+- Deploys the bytecode in its constructor
 - Has one function that will call the target's `transfer` function
-- Has one echidna property `t.balanceOf(address(this)) <= t.totalSupply()`
+- Has one Echidna property `t.balanceOf(address(this)) <= t.totalSupply()`
 
 ## Run Echidna
 
 ```bash
-$ echidna-test bytecode_only.sol
+$ echidna-test bytecode_only.sol --contract TestBytecodeOnly
 echidna_test_balance: failed!💥  
   Call sequence:
     transfer(0x0,1002)
 ```
 
-Here Echidna found that by calling `transfer(0 ,1002)` anyone can mint tokens. 
+Here Echidna found that by calling `transfer(0, 1002)` anyone can mint tokens. 
 
 ### Target source code
 
@@ -108,7 +108,7 @@ Echidna correctly found the bug: lack of overflow checks in `transfer`.
 ## Differential fuzzing
 
 Consider the following Vyper and Solidity contracts:
-```python
+```vyper
 @view
 @external
 def my_func(a: uint256, b: uint256, c: uint256) -> uint256:
@@ -133,7 +133,7 @@ interface Target{
 contract SolidityVersion{
     Target t;
 
-    constructor(){
+    constructor() public{
         address target_addr;
 
         // vyper bytecode
@@ -157,11 +157,9 @@ contract SolidityVersion{
 }
 ```
 
-Here we run Echidna with the [assertion mode](https://github.com/crytic/building-secure-contracts/blob/master/program-analysis/echidna/assertion-checking.md):
+Here we run Echidna with the [assertion mode](./assertion-checking.md):
 ```
-$ cat config.yaml 
-checkAsserts: true
-$ echidna-test  vyper.sol --config config.yaml --contract SolidityVersion
+$ echidna-test  vyper.sol --config config.yaml --contract SolidityVersion --test-mode assertion
 assertion in test: passed! 🎉
 ```
 
@@ -175,7 +173,7 @@ interface Target{
 contract TestBytecodeOnly{
     Target t;
 
-    constructor(){
+    constructor() public{
         address target_addr;
         // init bytecode
         bytes memory target_bytecode = hex"";
