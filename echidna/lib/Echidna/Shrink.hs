@@ -1,49 +1,85 @@
-module Echidna.Shrink where
+module Echidna.Shrink (shrinkTest) where
 
-import Control.Lens
 import Control.Monad ((<=<))
 import Control.Monad.Catch (MonadThrow)
-import Control.Monad.Random.Strict (MonadRandom, getRandomR, uniform, uniformMay)
-import Control.Monad.Reader.Class (MonadReader)
-import Control.Monad.State.Strict (MonadState(get, put))
-import Data.Foldable (traverse_)
-import Data.Has (Has(..))
-import Data.Maybe (fromMaybe)
+import Control.Monad.Random.Strict (MonadRandom, getRandomR, uniform)
+import Control.Monad.Reader.Class (MonadReader (ask), asks)
+import Control.Monad.State.Strict (MonadIO)
+import Data.Set qualified as Set
+import Data.List qualified as List
 
 import EVM (VM)
 
+import Echidna.Events (extractEvents)
 import Echidna.Exec
 import Echidna.Transaction
-import Echidna.Events (Events)
-import Echidna.Types.Solidity (SolConf(..), sender)
-import Echidna.Types.Test (TestValue(..))
-import Echidna.Types.Tx (Tx, TxResult, src)
+import Echidna.Types.Solidity (SolConf(..))
+import Echidna.Types.Test (TestValue(..), EchidnaTest(..), TestState(..), isOptimizationTest)
+import Echidna.Types.Tx (Tx(..))
+import Echidna.Types.Config
+import Echidna.Types.Campaign (CampaignConf(..))
+import Echidna.Test (getResultFromVM, checkETest)
 
--- | Given a call sequence that solves some Echidna test, try to randomly generate a smaller one that
--- still solves that test.
-shrinkSeq :: ( MonadRandom m, MonadReader x m, MonadThrow m
-             , Has SolConf x, MonadState y m, Has VM y)
-          => m (TestValue, Events, TxResult) -> (TestValue, Events, TxResult) -> [Tx] -> m ([Tx], TestValue, Events, TxResult)
-shrinkSeq f (v,es,r) xs = do
-  strategies <- sequence [shorten, shrunk]
-  let strategy = uniform strategies
-  xs' <- strategy
-  (value, events, result) <- check xs'
+shrinkTest
+  :: (MonadIO m, MonadThrow m, MonadRandom m, MonadReader Env m)
+  => VM
+  -> EchidnaTest
+  -> m (Maybe EchidnaTest)
+shrinkTest vm test = do
+  env <- ask
+  case test.state of
+    Large i | i >= env.cfg.campaignConf.shrinkLimit && not (isOptimizationTest test) ->
+      pure $ Just test { state = Solved }
+    Large i ->
+      if length test.reproducer > 1 || any canShrinkTx test.reproducer then do
+        maybeShrunk <- shrinkSeq vm (checkETest test) test.value test.reproducer
+        pure $ case maybeShrunk of
+          Just (txs, val, vm') -> do
+            Just test { state = Large (i + 1)
+                 , reproducer = txs
+                 , events = extractEvents False env.dapp vm'
+                 , result = getResultFromVM vm'
+                 , value = val }
+          Nothing ->
+            -- No success with shrinking this time, just bump trials
+            Just test { state = Large (i + 1) }
+      else
+        pure $ Just test { state = if isOptimizationTest test
+                                 then Large (i + 1)
+                                 else Solved }
+    _ -> pure Nothing
+
+-- | Given a call sequence that solves some Echidna test, try to randomly
+-- generate a smaller one that still solves that test.
+shrinkSeq
+  :: (MonadIO m, MonadRandom m, MonadReader Env m, MonadThrow m)
+  => VM
+  -> (VM -> m (TestValue, VM))
+  -> TestValue
+  -> [Tx]
+  -> m (Maybe ([Tx], TestValue, VM))
+shrinkSeq vm f v txs = do
+  txs' <- uniform =<< sequence [shorten, shrunk]
+  (value, vm') <- check txs' vm
   -- if the test passed it means we didn't shrink successfully
   pure $ case (value,v) of
-    (BoolValue False, _)               ->  (xs', value, events, result)
-    (IntValue x, IntValue y) | x >= y  ->  (xs', value, events, result)
-    _                                  ->  (xs, v, es, r)
+    (BoolValue False, _)              -> Just (txs', value, vm')
+    (IntValue x, IntValue y) | x >= y -> Just (txs', value, vm')
+    _                                 -> Nothing
   where
-    check xs' = do
-      og <- get
-      res <- traverse_ execTx xs' >> f
-      put og
-      pure res
-    shrinkSender x = do
-      l <- view (hasLens . sender)
-      case ifind (const (== x ^. src)) l of
-        Nothing     -> pure x
-        Just (i, _) -> flip (set src) x . fromMaybe (x ^. src) <$> uniformMay (l ^.. folded . indices (< i))
-    shrunk = mapM (shrinkSender <=< shrinkTx) xs
-    shorten = (\i -> take i xs ++ drop (i + 1) xs) <$> getRandomR (0, length xs)
+    check [] vm' = f vm'
+    check (x:xs') vm' = do
+      (_, vm'') <- execTx vm' x
+      check xs' vm''
+    shrunk = mapM (shrinkSender <=< shrinkTx) txs
+    shorten = (\i -> take i txs ++ drop (i + 1) txs) <$> getRandomR (0, length txs)
+
+shrinkSender :: (MonadReader Env m, MonadRandom m) => Tx -> m Tx
+shrinkSender x = do
+  senderSet <- asks (.cfg.solConf.sender)
+  let orderedSenders = List.sort $ Set.toList senderSet
+  case List.elemIndex x.src orderedSenders of
+    Just i | i > 0 -> do
+      sender <- uniform (take i orderedSenders)
+      pure x{src = sender}
+    _ -> pure x

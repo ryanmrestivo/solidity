@@ -2,31 +2,35 @@
 
 module Echidna.Processor where
 
-import Control.Monad.IO.Class (MonadIO(..))
 import Control.Exception (Exception)
 import Control.Monad.Catch (MonadThrow(..))
-import Data.Aeson ((.:), (.:?), (.!=), decode, parseJSON, withEmbeddedJSON, withObject)
+import Data.Aeson ((.:), (.:?), (.!=), eitherDecode, parseJSON, withEmbeddedJSON, withObject)
 import Data.Aeson.Types (FromJSON, Parser, Value(String))
 import Data.ByteString.Base16 qualified as BS16 (decode)
 import Data.ByteString.Lazy.Char8 qualified as BSL
 import Data.ByteString.UTF8 qualified as BSU
 import Data.Either (fromRight)
-import Data.HashMap.Strict qualified as M
-import Data.List (nub, isPrefixOf)
+import Data.List (isPrefixOf)
 import Data.List.NonEmpty qualified as NE
+import Data.Map (Map)
+import Data.Map qualified as Map
 import Data.Maybe (catMaybes, fromMaybe)
 import Data.SemVer (Version, fromText)
+import Data.Set (Set)
+import Data.Set qualified as Set
 import Data.Text (pack, isSuffixOf)
 import System.Directory (findExecutable)
-import System.Process (StdStream(..), readCreateProcessWithExitCode, proc, std_err)
 import System.Exit (ExitCode(..))
+import System.Process (StdStream(..), readCreateProcessWithExitCode, proc, std_err)
 import Text.Read (readMaybe)
 
 import EVM.ABI (AbiValue(..))
-import EVM.Types (Addr(..))
+import EVM.Types (Addr(..), FunctionSelector)
 
 import Echidna.ABI (hashSig, makeNumAbiValues, makeArrayAbiValues)
-import Echidna.Types.Signature (ContractName, FunctionName, FunctionHash)
+import Echidna.Types.Signature (ContractName, FunctionName)
+import Echidna.Types.Solidity (SolConf(..))
+import Echidna.Utility (measureIO)
 
 -- | Things that can go wrong trying to run a processor. Read the 'Show'
 -- instance for more detailed explanations.
@@ -36,22 +40,22 @@ data ProcException = ProcessorFailure String String
 instance Show ProcException where
   show = \case
     ProcessorFailure p e -> "Error running " ++ p ++ ":\n" ++ e
-    ProcessorNotFound p e -> "Cannot find " ++ p ++ "in PATH.\n" ++ e
+    ProcessorNotFound p e -> "Cannot find " ++ p ++ " in PATH.\n" ++ e
 
 instance Exception ProcException
 
 -- | This function is used to filter the lists of function names according to the supplied
 -- contract name (if any) and returns a list of hashes
-filterResults :: Maybe ContractName -> M.HashMap ContractName [FunctionName] -> [FunctionHash]
+filterResults :: Maybe ContractName -> Map ContractName [FunctionName] -> [FunctionSelector]
 filterResults (Just c) rs =
-  case M.lookup c rs of
+  case Map.lookup c rs of
     Nothing -> filterResults Nothing rs
     Just s -> hashSig <$> s
-filterResults Nothing rs = hashSig <$> (concat . M.elems) rs
+filterResults Nothing rs = hashSig <$> (concat . Map.elems) rs
 
-enhanceConstants :: SlitherInfo -> [AbiValue]
+enhanceConstants :: SlitherInfo -> Set AbiValue
 enhanceConstants si =
-  nub . concatMap enh . concat . concat . M.elems $ M.elems <$> constantValues si
+  Set.fromList . concatMap enh . concat . concat . Map.elems $ Map.elems <$> si.constantValues
   where
     enh (AbiUInt _ n) = makeNumAbiValues (fromIntegral n)
     enh (AbiInt _ n) = makeNumAbiValues (fromIntegral n)
@@ -60,18 +64,15 @@ enhanceConstants si =
 
 -- we loose info on what constants are in which functions
 data SlitherInfo = SlitherInfo
-  { payableFunctions :: M.HashMap ContractName [FunctionName]
-  , constantFunctions :: M.HashMap ContractName [FunctionName]
-  , asserts :: M.HashMap ContractName [FunctionName]
-  , constantValues  :: M.HashMap ContractName (M.HashMap FunctionName [AbiValue])
-  , generationGraph :: M.HashMap ContractName (M.HashMap FunctionName [FunctionName])
+  { payableFunctions :: Map ContractName [FunctionName]
+  , constantFunctions :: Map ContractName [FunctionName]
+  , asserts :: Map ContractName [FunctionName]
+  , constantValues  :: Map ContractName (Map FunctionName [AbiValue])
+  , generationGraph :: Map ContractName (Map FunctionName [FunctionName])
   , solcVersions :: [Version]
   , fallbackDefined :: [ContractName]
   , receiveDefined :: [ContractName]
   } deriving (Show)
-
-noInfo :: SlitherInfo
-noInfo = SlitherInfo mempty mempty mempty mempty mempty [] [] []
 
 instance FromJSON SlitherInfo where
   parseJSON = withObject "slitherOutput" $ \o -> do
@@ -90,12 +91,13 @@ instance FromJSON SlitherInfo where
         receiveDefined <- o .:? "with_receive" .!= ["*"]
         constantValues'
           -- the type annotation is needed
-          :: M.HashMap ContractName (M.HashMap FunctionName [[Maybe AbiValue]])
+          :: Map ContractName (Map FunctionName [[Maybe AbiValue]])
           <- o .: "constants_used" >>= (traverse . traverse . traverse . traverse) parseConstant
         -- flatten [[AbiValue]], the array probably shouldn't be nested, fix it in Slither
         let constantValues = (fmap . fmap) (catMaybes . concat) constantValues'
         functionsRelations <- o .: "functions_relations"
-        generationGraph <- (traverse . traverse) (withObject "relations" (.: "impacts")) functionsRelations
+        generationGraph <-
+          (traverse . traverse) (withObject "relations" (.: "impacts")) functionsRelations
         solcVersions' <- o .:? "solc_versions"
         solcVersions <- case mapM (fromText . pack) (fromMaybe [] solcVersions') of
           Left _ -> pure []
@@ -107,43 +109,39 @@ instance FromJSON SlitherInfo where
         v <- o .: "value"
         t <- o .: "type"
         case t of
-          'u':'i':'n':'t':x ->
-            case AbiUInt <$> readMaybe x <*> readMaybe v of
-              Nothing -> failure v t
-              i -> pure i
-
-          'i':'n':'t':x ->
-            case AbiInt <$> readMaybe x <*> readMaybe v of
-              Nothing -> failure v t
-              i -> pure i
-
+          'u':'i':'n':'t':x -> pure $ AbiUInt <$> readMaybe x <*> readMaybe v
+          'i':'n':'t':x -> pure $ AbiInt <$> readMaybe x <*> readMaybe v
           "string" ->
             pure . Just . AbiString $
-              if "0x" `isPrefixOf` v
-              then fromRight (error ("invalid b16 decoding of: " ++ show v)) $ BS16.decode $ BSU.fromString $ drop 2 v
+              if "0x" `isPrefixOf` v then
+                fromRight (BSU.fromString v) $ BS16.decode $ BSU.fromString $ drop 2 v
               else BSU.fromString v
 
-          "address" ->
-            case AbiAddress . Addr <$> readMaybe v of
-              Nothing -> failure v t
-              a -> pure a
+          "address" -> pure $ AbiAddress . Addr <$> readMaybe v
 
           -- we don't need all the types for now
           _ -> pure Nothing
-        where failure v t = fail $ "failed to parse " ++ t ++ ": " ++ v
 
 -- Slither processing
-runSlither :: (MonadIO m, MonadThrow m) => FilePath -> [String] -> m SlitherInfo
-runSlither fp extraArgs = if ".vy" `isSuffixOf` pack fp then return noInfo else do
-  mp <- liftIO $ findExecutable "slither"
-  case mp of
-    Nothing -> throwM $ ProcessorNotFound "slither" "You should install it using 'pip3 install slither-analyzer --user'"
-    Just path -> liftIO $ do
-      let args = ["--ignore-compile", "--print", "echidna", "--json", "-"] ++ extraArgs ++ [fp]
-      (ec, out, err) <- readCreateProcessWithExitCode (proc path args) {std_err = Inherit} ""
-      case ec of
-        ExitSuccess ->
-          case decode (BSL.pack out) of
-            Just si -> pure si
-            Nothing -> throwM $ ProcessorFailure "slither" "decoding slither output failed"
-        ExitFailure _ -> throwM $ ProcessorFailure "slither" err
+runSlither :: FilePath -> SolConf -> IO SlitherInfo
+runSlither fp _ | ".vy" `isSuffixOf` pack fp = pure noInfo
+runSlither fp solConf = do
+  path <- findExecutable "slither" >>= \case
+    Nothing -> throwM $
+      ProcessorNotFound "slither" "You should install it using 'pip3 install slither-analyzer --user'"
+    Just path -> pure path
+
+  let args = ["--ignore-compile", "--print", "echidna", "--json", "-"]
+             ++ solConf.cryticArgs ++ [fp]
+  (ec, out, err) <- measureIO solConf.quiet ("Running slither on " <> fp) $
+    readCreateProcessWithExitCode (proc path args) {std_err = Inherit} ""
+  case ec of
+    ExitSuccess ->
+      case eitherDecode (BSL.pack out) of
+        Right si -> pure si
+        Left msg -> throwM $
+          ProcessorFailure "slither" ("decoding slither output failed:\n" ++ msg)
+    ExitFailure _ -> throwM $ ProcessorFailure "slither" err
+
+noInfo :: SlitherInfo
+noInfo = SlitherInfo mempty mempty mempty mempty mempty [] [] []

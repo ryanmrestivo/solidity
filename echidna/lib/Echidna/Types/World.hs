@@ -1,13 +1,10 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Echidna.Types.World where
 
-import Control.Lens.TH (makeLenses)
-import Data.List.NonEmpty (NonEmpty)
+import Data.Set (Set)
 
-import EVM.Types (Addr)
+import EVM.Types (Addr, FunctionSelector)
 
-import Echidna.Types.Signature (FunctionHash, SignatureMap)
+import Echidna.Types.Signature (SignatureMap)
 import Echidna.Events (EventMap)
 
 -- | The world is composed by:
@@ -15,10 +12,10 @@ import Echidna.Events (EventMap)
 --    * A high-priority map of signatures from every contract
 --    * A low-priority map of signatures from every contract
 --    * A list of function hashes from payable functions
-data World = World { _senders          :: NonEmpty Addr
-                   , _highSignatureMap :: SignatureMap
-                   , _lowSignatureMap  :: Maybe SignatureMap
-                   , _payableSigs      :: [FunctionHash]
-                   , _eventMap         :: EventMap
-                   }
-makeLenses ''World
+data World = World
+  { senders          :: Set Addr
+  , highSignatureMap :: SignatureMap
+  , lowSignatureMap  :: Maybe SignatureMap
+  , payableSigs      :: [FunctionSelector]
+  , eventMap         :: EventMap
+  }

@@ -3,20 +3,22 @@ name: echidna
 author: Trail of Bits <echidna-dev@trailofbits.com>
 maintainer: Trail of Bits <echidna-dev@trailofbits.com>
 
-version: 2.0.4
+version: 2.2.0
 
-ghc-options: -Wall -fno-warn-orphans -O2 -threaded +RTS -N -RTS
+# https://github.com/haskell/cabal/issues/4739
+ghc-options: -Wall -fno-warn-orphans -O2 -optP-Wno-nonportable-include-path
 
 dependencies:
   - base
   - aeson
   - base16-bytestring
   - binary
-  - brick
   - bytestring
+  - code-page
   - containers
+  - data-bword
   - data-dword
-  - data-has
+  - deepseq
   - extra
   - directory
   - exceptions
@@ -24,11 +26,12 @@ dependencies:
   - hashable
   - hevm
   - html-entities
-  - lens
   - ListLike
   - MonadRandom
   - mtl
   - optparse-applicative
+  - optics
+  - optics-core
   - process
   - random
   - rosezipper
@@ -37,49 +40,57 @@ dependencies:
   - text
   - transformers
   - time
-  - unix
   - unliftio
   - utf8-string
-  - unordered-containers
   - vector
-  - vector-instances
-  - vty
+  - with-utf8
   - word-wrap
   - yaml
+  - http-conduit
+  - html-conduit
+  - xml-conduit
+
+language: GHC2021
 
 default-extensions:
+  - DuplicateRecordFields
   - LambdaCase
+  - MultiWayIf
+  - NoFieldSelectors
+  - OverloadedLabels
+  - OverloadedRecordDot
   - OverloadedStrings
-  # GHC2021 default extensions from 9.2
-  - FlexibleContexts
-  - FlexibleInstances
-  - ImportQualifiedPost
-  - MultiParamTypeClasses
-  - NamedFieldPuns
-  - RankNTypes
-  - ScopedTypeVariables
-  - StandaloneDeriving
-  - TupleSections
 
 library:
   source-dirs: lib/
 
+when:
+  - condition: "!os(windows)"
+    cpp-options: -DINTERACTIVE_UI
+    dependencies:
+      - brick
+      - unix
+      - vty
+
 executables:
-  echidna-test:
+  echidna:
     main: Main.hs
     source-dirs: src/
     dependencies: echidna
+    ghc-options: -threaded -with-rtsopts=-N
     when:
-        - condition: os(linux) && flag(static)
-          ghc-options:
-            - -static
-            - -O2
-          cc-options: -static
-          ld-options: -static -pthread
-        - condition: os(linux)
-          ghc-options:
-            - -O2
-          ld-options: -pthread
+      - condition: (os(linux) || os(windows)) && flag(static)
+        ghc-options:
+          - -optl-static
+      - condition: os(linux) || os(windows)
+        ghc-options:
+          - -O2
+          - -optl-pthread
+      - condition: os(darwin)
+        extra-libraries: c++
+        ld-options: -Wl,-keep_dwarf_unwind
+      - condition: os(windows)
+        extra-libraries: stdc++
 
 tests:
   echidna-testsuite:
@@ -91,19 +102,21 @@ tests:
       - tasty-hunit
       - tasty-quickcheck
     when:
-        - condition: os(linux) && flag(static)
+        - condition: (os(linux) || os(windows)) && flag(static)
           ghc-options:
-            - -static
-            - -O2
-          cc-options: -static
-          ld-options: -static -pthread
-        - condition: os(linux)
+            - -optl-static
+        - condition: os(linux) || os(windows)
           ghc-options:
             - -O2
-          ld-options: -pthread
+            - -optl-pthread
+        - condition: os(darwin)
+          extra-libraries: c++
+          ld-options: -Wl,-keep_dwarf_unwind
+        - condition: os(windows)
+          extra-libraries: stdc++
 
 flags:
   static:
     description: Pass -static to ghc when linking the stack binary.
     manual: true
-    default: true
+    default: false

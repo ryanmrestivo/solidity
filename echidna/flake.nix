@@ -1,9 +1,4 @@
 {
-  nixConfig = {
-    extra-substituters = "https://trailofbits.cachix.org";
-    extra-trusted-public-keys = "trailofbits.cachix.org-1:jRuxrlFghP6HstIaZg7DhvTgHyK/lcYa7U8y3CgKjzU=";
-  };
-
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs";
     flake-utils.url = "github:numtide/flake-utils";
@@ -42,8 +37,17 @@
             chmod +x $out/bin/solc
           '';
         };
+
+        hevm = pkgs.haskell.lib.dontCheck (
+          pkgs.haskellPackages.callCabal2nix "hevm" (pkgs.fetchFromGitHub {
+            owner = "ethereum";
+            repo = "hevm";
+            rev = "release/0.50.5";
+            sha256 = "sha256-Vi6kL1nJdujfS1oePwqks1owVPlS5Dd5hAn0r8Rpw+k=";
+        }) { secp256k1 = pkgs.secp256k1; });
+
         echidna = with pkgs; lib.pipe
-          (haskellPackages.callCabal2nix "echidna" ./. {})
+          (haskellPackages.callCabal2nix "echidna" ./. { inherit hevm; })
           [
             (haskell.lib.compose.addTestToolDepends [ haskellPackages.hpack slither-analyzer solc ])
             (haskell.lib.compose.disableCabalFlag "static")
