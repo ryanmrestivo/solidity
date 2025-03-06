@@ -172,7 +172,7 @@ Common causes for performance issues that we observed:
 - Lazy data constructors that accumulate thunks
 - Inefficient data structures used in hot paths
 
-Checking for these is a good place to start. If you suspect some comuptation is too lazy and
+Checking for these is a good place to start. If you suspect some computation is too lazy and
 leaks memory, you can use `force` from `Control.DeepSeq` to make sure it gets evaluated.
 
 ## Limitations and known issues
@@ -201,7 +201,7 @@ If you have Homebrew installed on your Mac or Linux machine, you can install Ech
 
 You can also compile and install the latest `master` branch code by running `brew install --HEAD echidna`
 
-You can get further information in the [`echidna` Homebrew Formula](https://formulae.brew.sh/formula/echidna) page. The formula itself is maintained as part of the [homebrew-core repository](https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/echidna.rb)
+You can get further information in the [`echidna` Homebrew Formula](https://formulae.brew.sh/formula/echidna) page. The formula itself is maintained as part of the [homebrew-core repository](https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/e/echidna.rb)
 
 ### Docker container
 
@@ -272,10 +272,11 @@ $ nix run github:crytic/echidna/v2.1.1 # specific ref (tag/branch/commit)
 ```
 
 To build a standalone release for non-Nix macOS systems, the following will
-bundle Echidna and all linked dylibs:
+build Echidna in a mostly static binary. This can also be used on Linux systems
+to produce a fully static binary.
 
 ```sh
-$ nix build .#echidna-bundle
+$ nix build .#echidna-redistributable
 ```
 
 Nix will automatically install all the dependencies required for development
@@ -296,6 +297,7 @@ $ nix develop # alternatively nix-shell
 
 This is a partial list of smart contracts projects that use Echidna for testing:
 
+* [Curvance](https://github.com/curvance/Curvance-CantinaCompetition/tree/CodeFAQAndAdjustments/tests/fuzzing)
 * [Primitive](https://github.com/primitivefinance/rmm-core/tree/main/contracts/crytic)
 * [Uniswap-v3](https://github.com/search?q=org%3AUniswap+echidna&type=commits)
 * [Balancer](https://github.com/balancer-labs/balancer-core/tree/master/echidna)
@@ -308,6 +310,40 @@ This is a partial list of smart contracts projects that use Echidna for testing:
 * [Centre Token](https://github.com/centrehq/centre-tokens/tree/master/echidna_tests)
 * [Tokencard](https://github.com/tokencard/contracts/tree/master/tools/echidna)
 * [Minimalist USD Stablecoin](https://github.com/usmfum/USM/pull/41)
+
+### Security reviews
+
+The following shows public security reviews that used Echidna to uncover vulnerabilities
+
+- [Advanced Blockchain](https://github.com/trailofbits/publications/blob/master/reviews/AdvancedBlockchain.pdf)
+- [Amp](https://github.com/trailofbits/publications/blob/master/reviews/amp.pdf)
+- [Ampleforth](https://github.com/trailofbits/publications/blob/master/reviews/ampleforth.pdf)
+- [Atlendis](https://github.com/trailofbits/publications/blob/master/reviews/2023-03-atlendis-atlendissmartcontracts-securityreview.pdf)
+- [Balancer](https://github.com/trailofbits/publications/blob/master/reviews/2021-04-balancer-balancerv2-securityreview.pdf)
+- [Basis](https://github.com/trailofbits/publications/blob/master/reviews/basis.pdf)
+- [Dai](https://github.com/trailofbits/publications/blob/master/reviews/mc-dai.pdf)
+- [Frax](https://github.com/trailofbits/publications/blob/master/reviews/FraxQ22022.pdf)
+- [Liquity](https://github.com/trailofbits/publications/blob/master/reviews/LiquityProtocolandStabilityPoolFinalReport.pdf)
+- [LooksRare](https://github.com/trailofbits/publications/blob/master/reviews/LooksRare.pdf)
+- [Maple](https://github.com/trailofbits/publications/blob/master/reviews/2022-03-maplefinance-securityreview.pdf)
+- [Optimism](https://github.com/trailofbits/publications/blob/master/reviews/2022-11-optimism-securityreview.pdf)
+- [Opyn](https://github.com/trailofbits/publications/blob/master/reviews/Opyn.pdf)
+- [Origin Dollar](https://github.com/trailofbits/publications/blob/master/reviews/OriginDollar.pdf)
+- [Origin](https://github.com/trailofbits/publications/blob/master/reviews/origin.pdf)
+- [Paxos](https://github.com/trailofbits/publications/blob/master/reviews/paxos.pdf)
+- [Primitive](https://github.com/trailofbits/publications/blob/master/reviews/Primitive.pdf)
+- [RocketPool](https://github.com/trailofbits/publications/blob/master/reviews/RocketPool.pdf)
+- [Seaport](https://github.com/trailofbits/publications/blob/master/reviews/SeaportProtocol.pdf)
+- [Set Protocol](https://github.com/trailofbits/publications/blob/master/reviews/setprotocol.pdf)
+- [Shell protocol](https://github.com/trailofbits/publications/blob/master/reviews/ShellProtocolv2.pdf)
+- [Sherlock](https://github.com/trailofbits/publications/blob/master/reviews/Sherlockv2.pdf)
+- [Pegasys Pantheon](https://github.com/trailofbits/publications/blob/master/reviews/pantheon.pdf)
+- [TokenCard](https://github.com/trailofbits/publications/blob/master/reviews/TokenCard.pdf)
+- [Uniswap](https://github.com/trailofbits/publications/blob/master/reviews/UniswapV3Core.pdf)
+- [Yearn](https://github.com/trailofbits/publications/blob/master/reviews/YearnV2Vaults.pdf)
+- [Yield](https://github.com/trailofbits/publications/blob/master/reviews/YieldProtocol.pdf)
+- [88mph](https://github.com/trailofbits/publications/blob/master/reviews/88mph.pdf)
+- [0x](https://github.com/trailofbits/publications/blob/master/reviews/0x-protocol.pdf)
 
 ### Trophies
 
@@ -353,7 +389,7 @@ If you are using Echidna for academic work, consider applying to the [Crytic $10
 
 ## Getting help
 
-Feel free to stop by our #ethereum slack channel in [Empire Hacking](https://empireslacking.herokuapp.com/) for help using or extending Echidna.
+Feel free to stop by our #ethereum slack channel in [Empire Hacking](https://slack.empirehacking.nyc/) for help using or extending Echidna.
 
 * Get started by reviewing these simple [Echidna invariants](tests/solidity/basic/flags.sol)
 

@@ -13,14 +13,14 @@ import Data.Text.Encoding (decodeUtf8)
 import Data.Vector.Unboxed qualified as VU
 import Numeric (showHex)
 
-import EVM.Types (keccak')
+import EVM.Dapp (DappInfo)
 
 import Echidna.ABI (ppAbiValue, GenDict(..))
-import Echidna.Events (Events)
+import Echidna.Events (Events, extractEvents)
 import Echidna.Types (Gas)
 import Echidna.Types.Campaign (WorkerState(..))
 import Echidna.Types.Config (Env(..))
-import Echidna.Types.Coverage (CoverageInfo)
+import Echidna.Types.Coverage (CoverageInfo, mergeCoverageMaps)
 import Echidna.Types.Test qualified as T
 import Echidna.Types.Test (EchidnaTest(..))
 import Echidna.Types.Tx (Tx(..), TxCall(..))
@@ -100,28 +100,28 @@ instance ToJSON Transaction where
 
 encodeCampaign :: Env -> [WorkerState] -> IO L.ByteString
 encodeCampaign env workerStates = do
-  tests <- readIORef env.testsRef
-  frozenCov <- mapM VU.freeze =<< readIORef env.coverageRef
+  tests <- traverse readIORef env.testRefs
+  frozenCov <- mergeCoverageMaps env.dapp env.coverageRefInit env.coverageRefRuntime
   -- TODO: this is ugly, refactor seed to live in Env
   let worker0 = Prelude.head workerStates
   pure $ encode Campaign
     { _success = True
     , _error = Nothing
-    , _tests = mapTest <$> tests
+    , _tests = mapTest env.dapp <$> tests
     , seed = worker0.genDict.defSeed
-    , coverage = Map.mapKeys (("0x" ++) . (`showHex` "") . keccak') $ VU.toList <$> frozenCov
+    , coverage = Map.mapKeys (("0x" ++) . (`showHex` "")) $ VU.toList <$> frozenCov
     , gasInfo = Map.toList $ Map.unionsWith max ((.gasInfo) <$> workerStates)
     }
 
-mapTest :: EchidnaTest -> Test
-mapTest test =
+mapTest :: DappInfo -> EchidnaTest -> Test
+mapTest dappInfo test =
   let (status, transactions, err) = mapTestState test.state test.reproducer
   in Test
     { contract = "" -- TODO add when mapping is available https://github.com/crytic/echidna/issues/415
     , name = "name" -- TODO add a proper name here
     , status = status
     , _error = err
-    , events = test.events
+    , events = maybe [] (extractEvents False dappInfo) test.vm
     , testType = Property
     , transactions = transactions
     }
@@ -144,6 +144,6 @@ mapTest test =
 
   mapCall = \case
     SolCreate _          -> ("<CREATE>", Nothing)
-    SolCall (name, args) -> (name, Just $ ppAbiValue <$> args)
+    SolCall (name, args) -> (name, Just $ ppAbiValue <$> mempty <*> args)
     NoCall               -> ("*wait*", Nothing)
     SolCalldata x        -> (decodeUtf8 $ "0x" <> BS16.encode x, Nothing)

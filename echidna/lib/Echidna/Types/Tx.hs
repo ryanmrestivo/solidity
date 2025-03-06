@@ -9,6 +9,7 @@ module Echidna.Types.Tx where
 import Prelude hiding (Word)
 
 import Control.Applicative ((<|>))
+import Control.Monad.ST (RealWorld)
 import Data.Aeson (FromJSON, ToJSON, parseJSON, toJSON, object, withObject, (.=), (.:))
 import Data.Aeson.TH (deriveJSON, defaultOptions)
 import Data.Aeson.Types (Parser)
@@ -16,12 +17,11 @@ import Data.ByteString (ByteString)
 import Data.Text (Text)
 import Data.Word (Word64)
 
-import EVM (VMResult(..), Error(..))
 import EVM.ABI (encodeAbiValue, AbiValue(..), AbiType)
-import EVM.Types (Addr, W256)
+import EVM.Types
 
 import Echidna.Orphans.JSON ()
-import Echidna.Types.Buffer (forceBuf)
+import Echidna.Symbolic (forceBuf)
 import Echidna.Types.Signature (SolCall)
 import Control.DeepSeq (NFData)
 import GHC.Generics (Generic)
@@ -173,15 +173,15 @@ data TxResult
   | ErrorInvalidMemoryAccess
   | ErrorCallDepthLimitReached
   | ErrorMaxCodeSizeExceeded
+  | ErrorMaxInitCodeSizeExceeded
   | ErrorPrecompileFailure
-  | ErrorUnexpectedSymbolic
   | ErrorDeadPath
-  | ErrorChoose -- not entirely sure what this is
   | ErrorWhiffNotUnique
   | ErrorSMTTimeout
   | ErrorFFI
   | ErrorNonceOverflow
   | ErrorReturnDataOutOfBounds
+  | ErrorNonexistentFork
   deriving (Eq, Ord, Show, Enum)
 $(deriveJSON defaultOptions ''TxResult)
 
@@ -200,38 +200,53 @@ data TxConf = TxConf
   -- ^ Maximum value to use in transactions
   }
 
--- | Transform a VMResult into a more hash friendly sum type
-getResult :: VMResult -> TxResult
+hasReverted :: VM Concrete RealWorld -> Bool
+hasReverted vm = let r = vm.result in
+  case r of
+    (Just (VMSuccess _)) -> False
+    _                    -> True
+
+isUselessNoCall :: Tx -> Bool
+isUselessNoCall tx = tx.call == NoCall && tx.delay == (0, 0)
+
+catNoCalls :: [Tx] -> [Tx]
+catNoCalls [] = []
+catNoCalls [tx] = [tx]
+catNoCalls (tx1:tx2:xs) = 
+    case (tx1.call, tx2.call) of 
+      (NoCall, NoCall) -> catNoCalls (nc:xs)
+      _                -> tx1 : catNoCalls (tx2:xs)
+  where nc = tx1 { delay = (fst tx1.delay + fst tx2.delay, snd tx1.delay + snd tx2.delay) }  
+
+-- | Transform a VMResult into a more hash-friendly sum type
+getResult :: VMResult Concrete s -> TxResult
 getResult = \case
   VMSuccess b | forceBuf b == encodeAbiValue (AbiBool True)  -> ReturnTrue
               | forceBuf b == encodeAbiValue (AbiBool False) -> ReturnFalse
               | otherwise                                    -> Stop
 
-  VMFailure (BalanceTooLow _ _)       -> ErrorBalanceTooLow
-  VMFailure (UnrecognizedOpcode _)    -> ErrorUnrecognizedOpcode
-  VMFailure SelfDestruction           -> ErrorSelfDestruction
-  VMFailure StackUnderrun             -> ErrorStackUnderrun
-  VMFailure BadJumpDestination        -> ErrorBadJumpDestination
-  VMFailure (Revert _)                -> ErrorRevert
-  VMFailure (OutOfGas _ _)            -> ErrorOutOfGas
-  VMFailure (BadCheatCode _)          -> ErrorBadCheatCode
-  VMFailure StackLimitExceeded        -> ErrorStackLimitExceeded
-  VMFailure IllegalOverflow           -> ErrorIllegalOverflow
-  VMFailure (Query _)                 -> ErrorQuery
-  VMFailure StateChangeWhileStatic    -> ErrorStateChangeWhileStatic
-  VMFailure InvalidFormat             -> ErrorInvalidFormat
-  VMFailure InvalidMemoryAccess       -> ErrorInvalidMemoryAccess
-  VMFailure CallDepthLimitReached     -> ErrorCallDepthLimitReached
-  VMFailure (MaxCodeSizeExceeded _ _) -> ErrorMaxCodeSizeExceeded
-  VMFailure PrecompileFailure         -> ErrorPrecompileFailure
-  VMFailure (UnexpectedSymbolicArg{}) -> ErrorUnexpectedSymbolic
-  VMFailure DeadPath                  -> ErrorDeadPath
-  VMFailure (Choose _)                -> ErrorChoose -- not entirely sure what this is
-  VMFailure (NotUnique _)             -> ErrorWhiffNotUnique
-  VMFailure SMTTimeout                -> ErrorSMTTimeout
-  VMFailure (FFI _)                   -> ErrorFFI
-  VMFailure NonceOverflow             -> ErrorNonceOverflow
-  VMFailure ReturnDataOutOfBounds     -> ErrorReturnDataOutOfBounds
+  HandleEffect (Query _)                  -> ErrorQuery
+
+  VMFailure (BalanceTooLow _ _)           -> ErrorBalanceTooLow
+  VMFailure (UnrecognizedOpcode _)        -> ErrorUnrecognizedOpcode
+  VMFailure SelfDestruction               -> ErrorSelfDestruction
+  VMFailure StackUnderrun                 -> ErrorStackUnderrun
+  VMFailure BadJumpDestination            -> ErrorBadJumpDestination
+  VMFailure (Revert _)                    -> ErrorRevert
+  VMFailure (OutOfGas _ _)                -> ErrorOutOfGas
+  VMFailure (BadCheatCode _ _)            -> ErrorBadCheatCode
+  VMFailure StackLimitExceeded            -> ErrorStackLimitExceeded
+  VMFailure IllegalOverflow               -> ErrorIllegalOverflow
+  VMFailure StateChangeWhileStatic        -> ErrorStateChangeWhileStatic
+  VMFailure InvalidFormat                 -> ErrorInvalidFormat
+  VMFailure InvalidMemoryAccess           -> ErrorInvalidMemoryAccess
+  VMFailure CallDepthLimitReached         -> ErrorCallDepthLimitReached
+  VMFailure (MaxCodeSizeExceeded _ _)     -> ErrorMaxCodeSizeExceeded
+  VMFailure (MaxInitCodeSizeExceeded _ _) -> ErrorMaxInitCodeSizeExceeded
+  VMFailure PrecompileFailure             -> ErrorPrecompileFailure
+  VMFailure NonceOverflow                 -> ErrorNonceOverflow
+  VMFailure ReturnDataOutOfBounds         -> ErrorReturnDataOutOfBounds
+  VMFailure (NonexistentFork _)           -> ErrorNonexistentFork
 
 makeSingleTx :: Addr -> Addr -> W256 -> TxCall -> [Tx]
 makeSingleTx a d v (SolCall c) = [Tx (SolCall c) a d maxGasPerBlock 0 v (0, 0)]

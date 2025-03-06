@@ -13,17 +13,16 @@ import Data.Set qualified as Set
 import Data.Text (isPrefixOf)
 import Data.Yaml qualified as Y
 
-import EVM (VM(..))
-import EVM.Types (W256)
+import EVM.Types (VM(..), W256)
 
+import Echidna.Mutator.Corpus (defaultMutationConsts)
 import Echidna.Test
 import Echidna.Types.Campaign
-import Echidna.Mutator.Corpus (defaultMutationConsts)
-import Echidna.Output.Source (CoverageFileType(..))
-import Echidna.Types.Solidity
-import Echidna.Types.Tx (TxConf(TxConf), maxGasPerBlock, defaultTimeDelay, defaultBlockDelay)
-import Echidna.Types.Test (TestConf(..))
 import Echidna.Types.Config
+import Echidna.Types.Coverage (CoverageFileType(..))
+import Echidna.Types.Solidity
+import Echidna.Types.Test (TestConf(..))
+import Echidna.Types.Tx (TxConf(TxConf), maxGasPerBlock, defaultTimeDelay, defaultBlockDelay)
 
 instance FromJSON EConfig where
   -- retrieve the config from the key usage annotated parse
@@ -57,6 +56,7 @@ instance FromJSON EConfigWithUsage where
               <*> (UIConf <$> v ..:? "timeout" <*> formatParser)
               <*> v ..:? "rpcUrl"
               <*> v ..:? "rpcBlock"
+              <*> v ..:? "etherscanApiKey"
       where
       useKey k = modify' $ Set.insert k
       x ..:? k = useKey k >> lift (x .:? k)
@@ -97,6 +97,14 @@ instance FromJSON EConfigWithUsage where
         <*> v ..:? "mutConsts" ..!= defaultMutationConsts
         <*> v ..:? "coverageFormats" ..!= [Txt,Html,Lcov]
         <*> v ..:? "workers"
+        <*> v ..:? "server"
+        <*> v ..:? "symExec"            ..!= False
+        <*> v ..:? "symExecConcolic"    ..!= True
+        <*> v ..:? "symExecTargets"     ..!= Nothing
+        <*> v ..:? "symExecTimeout"     ..!= defaultSymExecTimeout
+        <*> v ..:? "symExecNSolvers"    ..!= defaultSymExecNWorkers
+        <*> v ..:? "symExecMaxIters"    ..!= defaultSymExecMaxIters
+        <*> v ..:? "symExecAskSMTIters" ..!= defaultSymExecAskSMTIters
 
       solConfParser = SolConf
         <$> v ..:? "contractAddr"    ..!= defaultContractAddr
@@ -104,8 +112,9 @@ instance FromJSON EConfigWithUsage where
         <*> v ..:? "sender"          ..!= Set.fromList [0x10000, 0x20000, defaultDeployerAddr]
         <*> v ..:? "balanceAddr"     ..!= 0xffffffff
         <*> v ..:? "balanceContract" ..!= 0
-        <*> v ..:? "codeSize"        ..!= 0x6000      -- 24576 (EIP-170)
+        <*> v ..:? "codeSize"        ..!= 0xffffffff
         <*> v ..:? "prefix"          ..!= "echidna_"
+        <*> v ..:? "disableSlither"  ..!= False
         <*> v ..:? "cryticArgs"      ..!= []
         <*> v ..:? "solcArgs"        ..!= ""
         <*> v ..:? "solcLibs"        ..!= []

@@ -11,7 +11,7 @@ import Control.Exception (Exception)
 import Control.Monad (void)
 import Control.Monad.Catch (MonadThrow, throwM)
 import Control.Monad.Fail qualified as M (MonadFail(..))
-import Control.Monad.State.Strict (MonadState, get, put, execStateT, gets)
+import Control.Monad.State.Strict (MonadIO, MonadState, get, gets, put, execState, execStateT)
 import Data.Aeson (FromJSON(..), (.:), withObject, eitherDecodeFileStrict)
 import Data.ByteString.Base16 qualified as BS16 (decode)
 import Data.ByteString.Char8 (ByteString)
@@ -26,7 +26,7 @@ import Text.Read (readMaybe)
 import EVM
 import EVM.ABI (AbiType(..), AbiValue(..), decodeAbiValue, selector)
 import EVM.Exec (exec)
-import EVM.Types (Addr, W256, Expr(ConcreteBuf))
+import EVM.Types
 
 import Echidna.Exec
 import Echidna.Transaction
@@ -35,6 +35,7 @@ import Echidna.ABI (encodeSig)
 import Echidna.Types (fromEVM)
 import Echidna.Types.Tx (TxCall(..), Tx(..), makeSingleTx, createTxWithValue, unlimitedGasPerBlock)
 import Data.Set (Set)
+import Control.Monad.ST (RealWorld, stToIO)
 
 -- | During initialization we can either call a function or create an account or contract
 data Etheno
@@ -120,7 +121,7 @@ matchSignatureAndCreateTx _ _ = []
 
 -- | Main function: takes a filepath where the initialization sequence lives and returns
 -- | the initialized VM along with a list of Addr's to put in GenConf
-loadEthenoBatch :: Bool -> FilePath -> IO VM
+loadEthenoBatch :: Bool -> FilePath -> IO (VM Concrete RealWorld)
 loadEthenoBatch ffi fp = do
   bs <- eitherDecodeFileStrict fp
   case bs of
@@ -128,30 +129,31 @@ loadEthenoBatch ffi fp = do
     Right (ethenoInit :: [Etheno]) -> do
       -- Execute contract creations and initial transactions,
       let initVM = mapM execEthenoTxs ethenoInit
-      execStateT initVM (initialVM ffi)
+      vm <- stToIO $ initialVM ffi
+      execStateT initVM vm
 
-initAddress :: MonadState VM m => Addr -> m ()
+initAddress :: MonadState (VM Concrete s) m => Addr -> m ()
 initAddress addr = do
   cs <- gets (.env.contracts)
-  if addr `member` cs then pure ()
-  else #env % #contracts % at addr .= Just account
+  if LitAddr addr `member` cs then pure ()
+  else #env % #contracts % at (LitAddr addr) .= Just account
   where
     account =
       initialContract (RuntimeCode (ConcreteRuntimeCode mempty))
-        & set #nonce 0
-        & set #balance 100000000000000000000 -- default balance for EOAs in etheno
+        & set #nonce (Just 0)
+        & set #balance (Lit 100000000000000000000) -- default balance for EOAs in etheno
 
 crashWithQueryError
-  :: (MonadState VM m, MonadFail m, MonadThrow m)
-  => Query
+  :: (MonadState (VM Concrete s) m, MonadFail m, MonadThrow m)
+  => Query Concrete s
   -> Etheno
   -> m ()
 crashWithQueryError q et =
   case (q, et) of
-    (PleaseFetchContract addr _, FunctionCall f t _ _ _ _) ->
+    (PleaseFetchContract addr _ _, FunctionCall f t _ _ _ _) ->
       error $ "Address " ++ show addr ++ " was used during function call from "
                 ++ show f ++ " to " ++ show t ++ " but it was never defined as EOA or deployed as a contract"
-    (PleaseFetchContract addr _, ContractCreated f t _ _ _ _) ->
+    (PleaseFetchContract addr _ _, ContractCreated f t _ _ _ _) ->
       error $ "Address " ++ show addr ++ " was used during the contract creation of "
                 ++ show t ++ " from " ++ show f ++ " but it was never defined as EOA or deployed as a contract"
     (PleaseFetchSlot slot _ _, FunctionCall f t _ _ _ _) ->
@@ -164,26 +166,29 @@ crashWithQueryError q et =
 
 -- | Takes a list of Etheno transactions and loads them into the VM, returning the
 -- | address containing echidna tests
-execEthenoTxs :: (MonadState VM m, MonadFail m, MonadThrow m) => Etheno -> m ()
+execEthenoTxs :: (MonadIO m, MonadState (VM Concrete RealWorld) m, MonadFail m, MonadThrow m) => Etheno -> m ()
 execEthenoTxs et = do
   setupEthenoTx et
   vm <- get
-  res <- fromEVM exec
-  case (res, et) of
-    (_        , AccountCreated _)  -> pure ()
-    (Reversion,   _)               -> void $ put vm
-    (VMFailure (Query q), _)       -> crashWithQueryError q et
-    (VMFailure x, _)               -> vmExcept x >> M.fail "impossible"
-    (VMSuccess (ConcreteBuf bc),
-     ContractCreated _ ca _ _ _ _) -> do
-      #env % #contracts % at ca % _Just % #contractcode .= InitCode mempty mempty
-      fromEVM $ do
-        replaceCodeOfSelf (RuntimeCode (ConcreteRuntimeCode bc))
-        loadContract ca
-    _ -> pure ()
+  runFully vm
+  where
+  runFully vm = do
+    res <- fromEVM exec
+    case (res, et) of
+      (_        , AccountCreated _)  -> pure ()
+      (Reversion,   _)               -> void $ put vm
+      (HandleEffect (Query q), _)    -> crashWithQueryError q et
+      (VMFailure x, _)               -> vmExcept Nothing x >> M.fail "impossible"
+      (VMSuccess (ConcreteBuf bc),
+       ContractCreated _ ca _ _ _ _) -> do
+        #env % #contracts % at (LitAddr ca) % _Just % #code .= InitCode mempty mempty
+        fromEVM $ do
+          replaceCodeOfSelf (RuntimeCode (ConcreteRuntimeCode bc))
+          get <&> execState (loadContract (LitAddr ca)) >>= put
+      _ -> pure ()
 
 -- | For an etheno txn, set up VM to execute txn
-setupEthenoTx :: MonadState VM m => Etheno -> m ()
+setupEthenoTx :: (MonadIO m, MonadState (VM Concrete RealWorld) m) => Etheno -> m ()
 setupEthenoTx (AccountCreated f) =
   initAddress f -- TODO: improve etheno to include initial balance
 setupEthenoTx (ContractCreated f c _ _ d v) =

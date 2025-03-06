@@ -38,8 +38,10 @@ sender: ["0x10000", "0x20000", "0x30000"]
 balanceAddr: 0xffffffff
 #balanceContract overrides balanceAddr for the contract address
 balanceContract: 0
-#codeSize max code size for deployed contratcs (default 24576, per EIP-170)
-codeSize: 0x6000
+#codeSize max code size for deployed contratcs (default 0xffffffff)
+codeSize: 0xffffffff
+#whether or not to disable running slither (default false, uses slither)
+disableSlither: false
 #solcArgs allows special args to solc
 solcArgs: ""
 #solcLibs is solc libraries
@@ -87,5 +89,29 @@ maxValue: 100000000000000000000 # 100 eth
 rpcUrl: null
 # block number to use when fetching over RPC
 rpcBlock: null
-# number of workers
-workers: 1
+# Etherscan API key
+etherscanApiKey: null
+# number of workers. By default (unset) its value is the clamp of the number cores between 1 and 4
+workers: null
+# events server port
+server: null
+# whether to add an additional symbolic execution worker
+symExec: false
+# whether symbolic execution will be concolic (vs full symbolic execution)
+# only relevant if symExec is true
+symExecConcolic: true
+# number of SMT solvers used in symbolic execution
+# only relevant if symExec is true
+symExecNSolvers: 1
+# timeout for symbolic execution SMT solver queries
+# only relevant if symExec is true
+symExecTimeout: 30
+# Number of times we may revisit a particular branching point
+# only relevant if symExec is true and symExecConcolic is false
+symExecMaxIters: 10
+# Number of times we may revisit a particular branching point before we consult the smt solver to check reachability
+# only relevant if symExec is true and symExecConcolic is false
+symExecAskSMTIters: 1
+# List of whitelisted functions for using symbolic/concolic exploration
+# only relevant if symExec is true
+symExecTargets: null

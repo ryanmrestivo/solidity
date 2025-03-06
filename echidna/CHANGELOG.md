@@ -1,3 +1,61 @@
+## 2.2.6
+
+* feat: allow disabling Slither integration (#1327)
+* Print total call count on exit (#1328)
+* Fix precompile evaluation on Windows (#1333)
+* Upgrade `hevm` to fix `prank`ing cheatcodes (#1331)
+
+## 2.2.5
+
+* Support Ethereum Cancun upgrade (#1317, #1309, #1300)
+* Print a warning if an assert isn't hit in assert mode (#1110)
+* Add support for vm.label cheatcode when printing call sequences (#1314)
+* Coverage during contract deployment (#1304)
+* Fix overflow behavior: revert transaction instead of throwing VM error (#1293)
+* Documentation (#1298)
+
+## 2.2.4
+
+* Initial TLOAD/TSTORE support (#1286)
+* Initial symbolic execution implementation (experimental, #1216, #1251, #1285)
+* New panel toggles in the UI (#1197)
+* New gas/s metric (#1279)
+* Improved logging (#1202, #1271, #1273, #1274, #1283, #1258, #1269)
+* Performance improvements with multiple workers (#1228)
+* Shrinking improvements (#1196, #1250, #1280)
+* Improved configuration options (#1200, #1227, #1251)
+
+## 2.2.3
+
+* feat: add CLI commands for RPC URL and block number (#1194)
+* Speed up shrinking (#1192)
+* Update hevm to 0.53.0 (#1189)
+* Fix faulty corpus transaction detection (#1184)
+* Display contract names in UI (#1181)
+* Save traces for every transaction in reproducer (#1180)
+* Validate corpus while replaying (#1177)
+* Refactors (#1174, #1178)
+
+## 2.2.2
+
+* Save corpus and reproducers continuously (#1167)
+* Deliver status information using server-sent events (#1131)
+* Performance improvements for coverage collection (#1160)
+* Make slither optional (#1159)
+* Rich trace printing (#1157)
+* Static builds and release workflow (#1133)
+* Re-enables using slither for vyper files (#1108)
+* Dependency updates (#1153, #1096, #1154)
+
+## 2.2.1
+
+* Shanghai fork support with hevm 0.51.3 (#1090)
+* Fixed coverage collection for delegatecalls (#1083)
+* Added events to JSON output (#1069)
+* Changed event sequence to be displayed on new lines (#1079)
+* Improved "No tests found in ABI" error message (#1077)
+* Refactored code (#1070, #1074)
+
 ## 2.2.0
 
 * Multicore fuzzing (#963, #1033, #1026, #1035)
@@ -207,7 +265,7 @@
 * Prioritization to mutate each list of transactions from the corpus (#376, #395)
 * Improved array generation using generic mutations (#357)
 * Multiple coverage tracking according to the result of a transaction (#369)
-* Allow to control corpus mutation constans using a configuration file (#373)
+* Allow to control corpus mutation constants using a configuration file (#373)
 
 ## 1.4.0.1
 * HEVM updated to [af84e2ee0a0654fdaa91186384233cf1731ee7ce]
@@ -242,7 +300,7 @@
 * `default.yaml` kept up to date via CI checks (#301)
 * Improved shrinking (#310)
 * Solidity ABIv2 support (#284, #303, #317)
-* Early termination on property falure (#323)
+* Early termination on property failure (#323)
 * Timeouts (#320)
 * HEVM updated to [2cc059b49cae613025b925f0273b906e25484b68]
 * Dictionary control (#312, #321)

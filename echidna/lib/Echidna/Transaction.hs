@@ -7,32 +7,36 @@ import Optics.Core
 import Optics.State.Operators
 
 import Control.Monad (join)
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Random.Strict (MonadRandom, getRandomR, uniform)
-import Control.Monad.State.Strict (MonadState, gets, modify')
+import Control.Monad.Reader (MonadReader, ask)
+import Control.Monad.State.Strict (MonadState, gets, modify', execState)
+import Control.Monad.ST (RealWorld)
 import Data.Map (Map, toList)
-import Data.Map qualified as Map
-import Data.Maybe (mapMaybe)
+import Data.Maybe (catMaybes)
 import Data.Set (Set)
 import Data.Set qualified as Set
 import Data.Vector qualified as V
 
-import EVM hiding (resetState, VMOpts(timestamp, gasprice))
+import EVM (initialContract, loadContract, resetState)
 import EVM.ABI (abiValueType)
-import EVM.Types (Expr(ConcreteBuf, Lit), Addr, W256, FunctionSelector)
+import EVM.Types hiding (Env, VMOpts(timestamp, gasprice))
 
 import Echidna.ABI
-import Echidna.Types.Random
 import Echidna.Orphans.JSON ()
+import Echidna.SourceMapping (lookupUsingCodehash)
+import Echidna.Symbolic (forceWord, forceAddr)
 import Echidna.Types (fromEVM)
-import Echidna.Types.Buffer (forceBuf, forceLit)
+import Echidna.Types.Config (Env(..), EConfig(..))
+import Echidna.Types.Random
 import Echidna.Types.Signature
-  (SignatureMap, SolCall, ContractA, MetadataCache, lookupBytecodeMetadata)
+  (SignatureMap, SolCall, ContractA)
 import Echidna.Types.Tx
 import Echidna.Types.World (World(..))
 import Echidna.Types.Campaign
 
-hasSelfdestructed :: VM -> Addr -> Bool
-hasSelfdestructed vm addr = addr `elem` vm.tx.substate.selfdestructs
+hasSelfdestructed :: VM Concrete s -> Addr -> Bool
+hasSelfdestructed vm addr = LitAddr addr `elem` vm.tx.subState.selfdestructs
 
 -- | If half a tuple is zero, make both halves zero. Useful for generating
 -- delays, since block number only goes up with timestamp
@@ -52,18 +56,18 @@ getSignatures hmm (Just lmm) =
 
 -- | Generate a random 'Transaction' with either synthesis or mutation of dictionary entries.
 genTx
-  :: (MonadRandom m, MonadState WorkerState m)
-  => MetadataCache
-  -> World
-  -> TxConf
-  -> Map Addr Contract
+  :: (MonadIO m, MonadRandom m, MonadState WorkerState m, MonadReader Env m)
+  => World
+  -> Map (Expr EAddr) Contract
   -> m Tx
-genTx memo world txConf deployedContracts = do
+genTx world deployedContracts = do
+  env <- ask
+  let txConf = env.cfg.txConf
   genDict <- gets (.genDict)
   sigMap <- getSignatures world.highSignatureMap world.lowSignatureMap
   sender <- rElem' world.senders
-  (dstAddr, dstAbis) <- rElem' $ Set.fromList $
-    mapMaybe (toContractA sigMap) (toList deployedContracts)
+  contractAList <- liftIO $ mapM (toContractA env sigMap) (toList deployedContracts)
+  (dstAddr, dstAbis) <- rElem' $ Set.fromList $ catMaybes contractAList
   solCall <- genInteractionsM genDict dstAbis
   value <- genValue txConf.maxValue genDict.dictValues world.payableSigs solCall
   ts <- (,) <$> genDelay txConf.maxTimeDelay genDict.dictValues
@@ -77,11 +81,9 @@ genTx memo world txConf deployedContracts = do
             , delay = level ts
             }
   where
-    toContractA :: SignatureMap -> (Addr, Contract) -> Maybe ContractA
-    toContractA sigMap (addr, c) =
-      let bc = forceBuf $ view bytecode c
-          metadata = lookupBytecodeMetadata memo bc
-      in (addr,) <$> Map.lookup metadata sigMap
+    toContractA :: Env -> SignatureMap -> (Expr EAddr, Contract) -> IO (Maybe ContractA)
+    toContractA env sigMap (addr, c) =
+      fmap (forceAddr addr,) . snd <$> lookupUsingCodehash env.codehashMap c env.dapp sigMap
 
 genDelay :: MonadRandom m => W256 -> Set W256 -> m W256
 genDelay mv ds = do
@@ -116,31 +118,34 @@ canShrinkTx Tx { call, gasprice = 0, value = 0, delay = (0, 0) } =
 canShrinkTx _ = True
 
 removeCallTx :: Tx -> Tx
-removeCallTx t = Tx NoCall 0 t.src 0 0 0 t.delay
+removeCallTx t = Tx NoCall t.src t.dst 0 0 0 t.delay
 
 -- | Given a 'Transaction', generate a random \"smaller\" 'Transaction', preserving origin,
 -- destination, value, and call signature.
 shrinkTx :: MonadRandom m => Tx -> m Tx
-shrinkTx tx' =
+shrinkTx tx =
   let
-    shrinkCall = case tx'.call of
+    shrinkCall = case tx.call of
       SolCall sc -> SolCall <$> shrinkAbiCall sc
-      _ -> pure tx'.call
+      _ -> pure tx.call
     lower 0 = pure 0
     lower x = (getRandomR (0 :: Integer, fromIntegral x)
                 >>= (\r -> uniform [0, r]) . fromIntegral) -- try 0 quicker
     possibilities =
       [ do call' <- shrinkCall
-           pure tx' { call = call' }
-      , do value' <- lower tx'.value
-           pure tx' { Echidna.Types.Tx.value = value' }
-      , do gasprice' <- lower tx'.gasprice
-           pure tx' { Echidna.Types.Tx.gasprice = gasprice' }
-      , do let (time, blocks) = tx'.delay
-           delay' <- level <$> ((,) <$> lower time <*> lower blocks)
-           pure tx' { delay = delay' }
+           pure tx { call = call' }
+      , do value' <- lower tx.value
+           pure tx { Echidna.Types.Tx.value = value' }
+      , do gasprice' <- lower tx.gasprice
+           pure tx { Echidna.Types.Tx.gasprice = gasprice' }
+      , do let (time, blocks) = tx.delay
+           delay' <- join $ uniform [ (time,) <$> lower blocks
+                                    , (,blocks) <$> lower time
+                                    , (,) <$> lower time <*> lower blocks
+                                    ]
+           pure tx { delay = level delay' }
       ]
-  in join $ usuallyRarely (join (uniform possibilities)) (pure $ removeCallTx tx')
+  in join $ usuallyRarely (join (uniform possibilities)) (pure $ removeCallTx tx)
 
 mutateTx :: (MonadRandom m) => Tx -> m Tx
 mutateTx tx@Tx{call = SolCall c} = do
@@ -152,46 +157,45 @@ mutateTx tx = pure tx
 
 -- | Given a 'Transaction', set up some 'VM' so it can be executed. Effectively, this just brings
 -- 'Transaction's \"on-chain\".
-setupTx :: MonadState VM m => Tx -> m ()
+setupTx :: (MonadIO m, MonadState (VM Concrete RealWorld) m) => Tx -> m ()
 setupTx tx@Tx{call = NoCall} = fromEVM $ do
+  resetState
   modify' $ \vm -> vm
-    { state = resetState vm.state
+    { state = vm.state
     , block = advanceBlock vm.block tx.delay
     }
-  loadContract tx.dst
 
 setupTx tx@Tx{call} = fromEVM $ do
+  resetState
   modify' $ \vm -> vm
     { result = Nothing
-    , state = (resetState vm.state)
+    , state = vm.state
                  { gas = tx.gas
-                 , caller = Lit (fromIntegral tx.src)
+                 , caller = LitAddr (fromIntegral tx.src)
                  , callvalue = Lit tx.value
                  }
     , block = advanceBlock vm.block tx.delay
-    , tx = vm.tx { gasprice = tx.gasprice, origin = tx.src }
+    , tx = vm.tx { gasprice = tx.gasprice, origin = LitAddr tx.src }
     }
   case call of
     SolCreate bc -> do
-      #env % #contracts % at tx.dst .= Just (initialContract (InitCode bc mempty) & set #balance tx.value)
-      loadContract tx.dst
+      #env % #contracts % at (LitAddr tx.dst) .=
+        Just (initialContract (InitCode bc mempty) & set #balance (Lit tx.value))
+      modify' $ execState $ loadContract (LitAddr tx.dst)
       #state % #code .= RuntimeCode (ConcreteRuntimeCode bc)
     SolCall cd -> do
       incrementBalance
-      loadContract tx.dst
+      modify' $ execState $ loadContract (LitAddr tx.dst)
       #state % #calldata .= ConcreteBuf (encode cd)
     SolCalldata cd -> do
       incrementBalance
-      loadContract tx.dst
+      modify' $ execState $ loadContract (LitAddr tx.dst)
       #state % #calldata .= ConcreteBuf cd
   where
-    incrementBalance = #env % #contracts % ix tx.dst % #balance %= (+ tx.value)
+    incrementBalance = #env % #contracts % ix (LitAddr tx.dst) % #balance %= (\v -> Lit $ forceWord v + tx.value)
     encode (n, vs) = abiCalldata (encodeSig (n, abiValueType <$> vs)) $ V.fromList vs
-
-resetState :: FrameState -> FrameState
-resetState s = s { pc = 0, stack = mempty, memory = mempty }
 
 advanceBlock :: Block -> (W256, W256) -> Block
 advanceBlock blk (t,b) =
-  blk { timestamp = Lit (forceLit blk.timestamp + t)
+  blk { timestamp = Lit (forceWord blk.timestamp + t)
       , number = blk.number + b }
